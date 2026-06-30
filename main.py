@@ -1,16 +1,21 @@
 import asyncio
+import json
 import os
+import re
 from datetime import datetime
-import agents
+
 from dotenv import load_dotenv
-from agents import Runner, RunConfig
-from openai.types.responses import ResponseTextDeltaEvent
-from agents.items import TResponseInputItem
-from agents.stream_events import RawResponsesStreamEvent
 
 load_dotenv()
 os.environ.setdefault("OPENAI_BASE_URL", "http://localhost:11434/v1")
 os.environ.setdefault("OPENAI_API_KEY", "ollama")
+
+from langchain_core.messages import (
+    AIMessage,
+    AIMessageChunk,
+    HumanMessage,
+    ToolMessage,
+)
 
 from agent import orchestrator_agent, LOCAL_MODEL
 
@@ -24,82 +29,111 @@ def _log(message: str) -> None:
     print(f"[{ts}] {message}", flush=True)
 
 
-def _extract_final_response_text(result: object, streamed_text: str) -> str:
-    """Lấy final response text theo best-effort từ result; fallback về text đã stream."""
-    # 1) Ưu tiên final_output nếu SDK có expose.
-    final_output = getattr(result, "final_output", None)
-    if isinstance(final_output, str) and final_output.strip():
-        return final_output
+def _extract_current_product(tool_content: str) -> str | None:
+    """Trích tên sản phẩm đầu tiên từ JSON kết quả tool.
 
-    # 2) Một số SDK trả output_text trực tiếp.
-    output_text = getattr(result, "output_text", None)
-    if isinstance(output_text, str) and output_text.strip():
-        return output_text
+    Trả None nếu không parse được hoặc không có sản phẩm.
+    """
+    try:
+        data = json.loads(tool_content)
+        products = data.get("products") or []
+        if products:
+            return products[0].get("tên") or None
+    except (json.JSONDecodeError, AttributeError):
+        pass
+    return None
 
-    # 3) fallback: text đã ghép từ streaming deltas.
-    return streamed_text
+
+def _build_effective_query(input_query: str, current_product: str | None) -> str:
+    """Ghép current_product vào đầu query nếu chưa có trong query.
+
+    Nếu query đã chứa tên/keyword sản phẩm thì giữ nguyên.
+    """
+    if not current_product:
+        return input_query
+    if current_product.lower() in input_query.lower():
+        return input_query
+    # Lấy keyword ngắn gọn nhất từ tên sản phẩm (bỏ các từ chung như Model, Product)
+    short = re.sub(r'\b(Model|Product|Series|Type)\b', '', current_product, flags=re.IGNORECASE).strip()
+    return f"{short} {input_query}"
 
 
 async def main():
-    run_config = RunConfig(tracing_disabled=True)
     verbose_logs = _is_verbose_enabled()
 
     _log(f"Model running: {LOCAL_MODEL}")
     _log(f"Endpoint: {os.getenv('OPENAI_BASE_URL')}")
     _log(f"Verbose logs: {'ON' if verbose_logs else 'OFF'} (set VERBOSE_LOGS=0 to disable)")
 
-    input_items: list[TResponseInputItem] = []
+    messages: list = []
+    current_product: str | None = None  # sản phẩm/thực thể đang được hỏi
     while True:
         input_query = input("Enter the query: ")
         _log(f"Received user query: {input_query}")
 
-        # Hard guard: lưu query nguyên văn để tool luôn có thể dùng đúng câu user gõ.
-        os.environ["RUN_USER_QUERY"] = input_query
-
-        input_items.append({"content": input_query, "role": "user"})
-        _log(f"Conversation items before run: {len(input_items)}")
-
-        result = Runner.run_streamed(orchestrator_agent, input_items, run_config=run_config)
-        _log("Started streamed run")
-        _log("Result: " + repr(result))
-        streamed_chunks: list[str] = []
-
-        async for item in result.stream_events():
-            _log(f"Stream event type: {type(item)}")
-            if not isinstance(item, RawResponsesStreamEvent):
-                _log("event data: " + repr(getattr(item, "data", None)))
-            if verbose_logs:
-                # Log tool call events để phát hiện khi agent không gọi tool
-                if item.type == "run_item_stream_event":
-                    run_item = getattr(item, "item", None)
-                    item_type = getattr(run_item, "type", "?")
-                    if item_type == "tool_call_item":
-                        tool_name = getattr(getattr(run_item, "raw_item", None), "name", "?")
-                        _log(f"Stream event: TOOL_CALL name={tool_name}")
-                    elif item_type == "tool_call_output_item":
-                        output = repr(getattr(run_item, "output", ""))[:200]
-                        _log(f"Stream event: TOOL_RESULT output={output}")
-                    else:
-                        _log(f"Stream event: run_item type={item_type}")
-                elif item.type == "agent_updated_stream_event":
-                    agent_name = getattr(getattr(item, "new_agent", None), "name", "?")
-                    _log(f"Stream event: AGENT_SWITCH new_agent={agent_name}")
-
-            if item.type == "raw_response_event" and isinstance(item.data, ResponseTextDeltaEvent):
-                streamed_chunks.append(item.data.delta)
-                print(item.data.delta, end="", flush=True)
-
-        final_response = _extract_final_response_text(result, "".join(streamed_chunks)).strip()
-        if final_response:
-            _log(f"Final assistant response: {final_response}")
+        # Ghép current_product vào query nếu chưa có → tool có context follow-up.
+        effective_query = _build_effective_query(input_query, current_product)
+        os.environ["RUN_USER_QUERY"] = effective_query
+        if effective_query != input_query:
+            _log(f"RUN_USER_QUERY (enriched): '{effective_query}'")
         else:
-            _log("Final assistant response: <empty>")
+            _log(f"RUN_USER_QUERY: '{effective_query}'")
 
-        input_items = result.to_input_list()
-        _log(f"Run completed. Conversation items after run: {len(input_items)}")
+        messages.append(HumanMessage(content=input_query))
+        _log(f"Conversation items before run: {len(messages)}")
+
+        _log("Started streamed run")
+        streamed_chunks: list[str] = []
+        final_state = None
+
+        async for mode, data in orchestrator_agent.astream(
+            {"messages": messages},
+            stream_mode=["values", "messages"],
+        ):
+            if mode == "messages":
+                chunk, _meta = data
+                # Stream token của câu trả lời cuối (AIMessageChunk có content).
+                if isinstance(chunk, AIMessageChunk):
+                    if chunk.content:
+                        streamed_chunks.append(chunk.content)
+                        print(chunk.content, end="", flush=True)
+                    if verbose_logs:
+                        for tc in getattr(chunk, "tool_call_chunks", None) or []:
+                            if tc.get("name"):
+                                _log(f"Stream event: TOOL_CALL name={tc['name']}")
+                elif isinstance(chunk, ToolMessage):
+                    # Cập nhật current_product từ kết quả tool — luôn chạy bất kể verbose.
+                    if chunk.name == "search_products":
+                        extracted = _extract_current_product(chunk.content or "")
+                        if extracted:
+                            current_product = extracted
+                            _log(f"current_product updated: '{current_product}'")
+                    if verbose_logs:
+                        output = repr(chunk.content)[:200]
+                        _log(f"Stream event: TOOL_RESULT name={chunk.name} output={output}")
+            elif mode == "values":
+                final_state = data
+
+        # Cập nhật lịch sử hội thoại từ state cuối cùng của graph.
+        if final_state and final_state.get("messages"):
+            messages = final_state["messages"]
+
+        final_response = ""
+        if final_state and final_state.get("messages"):
+            last = final_state["messages"][-1]
+            if isinstance(last, AIMessage) and isinstance(last.content, str):
+                final_response = last.content.strip()
+        if not final_response:
+            final_response = "".join(streamed_chunks).strip()
+
+        if final_response:
+            _log(f"\nFinal assistant response: {final_response}")
+        else:
+            _log("\nFinal assistant response: <empty>")
+
+        _log(f"Run completed. Conversation items after run: {len(messages)}")
         print("\n")
 
-                
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,3 +1,7 @@
-openai-agents
+langchain
+langchain-core
+langchain-openai
+langgraph
 asyncpg
+httpx
 python-dotenv

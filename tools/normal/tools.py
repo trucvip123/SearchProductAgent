@@ -1,4 +1,5 @@
-from agents import function_tool, RunContextWrapper
+from langchain_core.tools import tool
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional, Any, List, Dict
 from dataclasses import dataclass, fields, asdict
 import json
@@ -116,8 +117,8 @@ def _rrf_merge(
     return [(store[rk], round(scores[rk], 5)) for rk in ranked[:max_results]]
 
 
-async def custom_product_error_handler(ctx: RunContextWrapper[Any], error: Exception) -> str:
-    """Hàm xử lý lỗi tùy chỉnh cho tool truy vấn sản phẩm máy chủ từ vector DB."""
+def _product_error_message(error: Exception) -> str:
+    """Ánh xạ exception → thông báo lỗi thân thiện cho tool truy vấn sản phẩm."""
     _log("ERROR_HANDLER", f"Caught error: {type(error).__name__}: {error}")
     if isinstance(error, httpx.HTTPStatusError):
         return f"Lỗi HTTP {error.response.status_code} khi cố gắng truy vấn database. Vui lòng thử lại sau."
@@ -129,7 +130,76 @@ async def custom_product_error_handler(ctx: RunContextWrapper[Any], error: Excep
         return f"Đã xảy ra lỗi không mong muốn: {type(error).__name__}. Vui lòng thử lại."
 
 
-@function_tool(failure_error_function=custom_product_error_handler)
+def _error_json(message: str) -> str:
+    """Trả về JSON string mô tả lỗi để agent có thể chuyển tiếp cho người dùng."""
+    return json.dumps({"status": "error", "message": message, "products": []}, ensure_ascii=False)
+
+
+class SearchProductsArgs(BaseModel):
+    """Schema tham số cho tool search_products.
+
+    Dễ dãi với model local hay gửi chuỗi rỗng ('') hoặc số dưới dạng chuỗi:
+    - Các field optional: '' → None.
+    - max_results: '' / None / chuỗi → int an toàn (mặc định 5).
+    """
+    user_query: str = Field(default="", description="Câu người dùng gõ nguyên văn. Nếu để trống, tự động tổng hợp từ các structured fields.")
+    max_results: int = Field(default=5, description="Số lượng kết quả tối đa (mặc định 5).")
+    product_type: Optional[str] = Field(default=None, description='Loại thiết bị. VD: "ổ cứng ngoài", "máy chủ", "laptop".')
+    brand: Optional[str] = Field(default=None, description='Hãng sản xuất. VD: "WD", "Dell", "HPE", "Synology".')
+    series: Optional[str] = Field(default=None, description='Dòng sản phẩm. VD: "My Book", "PowerEdge", "ThinkPad".')
+    model: Optional[str] = Field(default=None, description='Model cụ thể. VD: "R740xd", "DS223j", "1381".')
+    cpu: Optional[str] = Field(default=None, description='CPU. VD: "Gold 6248", "E-2434".')
+    ram: Optional[str] = Field(default=None, description='RAM. VD: "128GB", "32GB ECC".')
+    storage: Optional[str] = Field(default=None, description='Lưu trữ gắn trong. VD: "2TB SSD".')
+    capacity: Optional[str] = Field(default=None, description='Dung lượng ổ cứng ngoài / NAS. VD: "3TB", "8TB".')
+    interface: Optional[str] = Field(default=None, description='Giao tiếp. VD: "USB 3.0", "PCIe 4.0".')
+    price_range: Optional[str] = Field(default=None, description='Khoảng giá. VD: "dưới 5 triệu", "10-20 triệu".')
+
+    @field_validator("user_query", mode="before")
+    @classmethod
+    def _empty_user_query_to_str(cls, v: Any) -> str:
+        if v is None or (isinstance(v, str) and not v.strip()):
+            return ""
+        return str(v)
+
+    @model_validator(mode="after")
+    def _fill_user_query(self) -> "SearchProductsArgs":
+        """Nếu model không truyền user_query, tự gập các structured fields lại."""
+        if not self.user_query.strip():
+            tokens = [
+                v for v in [
+                    self.product_type, self.brand, self.series, self.model,
+                    self.cpu, self.ram, self.storage, self.capacity,
+                    self.interface, self.price_range,
+                ]
+                if v
+            ]
+            self.user_query = " ".join(tokens) if tokens else "(unknown)"
+        return self
+
+    @field_validator("max_results", mode="before")
+    @classmethod
+    def _coerce_max_results(cls, v: Any) -> int:
+        if v is None or (isinstance(v, str) and not v.strip()):
+            return 5
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return 5
+
+    @field_validator(
+        "product_type", "brand", "series", "model", "cpu",
+        "ram", "storage", "capacity", "interface", "price_range",
+        mode="before",
+    )
+    @classmethod
+    def _empty_to_none(cls, v: Any) -> Any:
+        if isinstance(v, str) and not v.strip():
+            return None
+        return v
+
+
+@tool(args_schema=SearchProductsArgs)
 async def search_products(
     user_query: str,
     max_results: int = 5,
@@ -183,12 +253,17 @@ async def search_products(
     memory_tokens = memory.to_search_tokens()
 
     # ── Chọn effective_query ──────────────────────────────────────────────
-    effective_query = getenv("RUN_USER_QUERY", user_query).strip()
-    
+    base_query = getenv("RUN_USER_QUERY", user_query).strip()
+    if memory_tokens:
+        # Gộp token từ ProductMemory chưa xuất hiện trong base_query
+        extra = [t for t in memory_tokens if t.lower() not in base_query.lower()]
+        effective_query = " ".join(extra + [base_query]) if extra else base_query
+    else:
+        effective_query = base_query
 
     _log("START", f"user_query='{user_query}', max_results={max_results}")
     _log("MEMORY", f"ProductMemory={memory.to_log_dict()}")
-    _log("GUARD", f"Effective query='{effective_query}'")
+    _log("GUARD", f"base_query='{base_query}', effective_query='{effective_query}'")
 
     # ── FTS query text: memory tokens > effective_query ───────────────────
     fts_text = " ".join(memory_tokens) if memory_tokens else effective_query
@@ -212,7 +287,8 @@ async def search_products(
 
     # ── Table name validation (SQL injection guard) ──────────────────────
     if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', db_table):
-        raise ValueError(f"Invalid table name: '{db_table}'")
+        _log("ERROR", f"Invalid table name: '{db_table}'")
+        return _error_json(f"Tên bảng không hợp lệ: '{db_table}'")
 
     safe_pw = "***" if db_password else "(empty)"
     _log(
@@ -446,27 +522,29 @@ async def search_products(
             await conn.close()
             _log("CONNECT", "Closed PostgreSQL connection")
 
+    except asyncpg.TooManyConnectionsError:
+        _log("ERROR", "Too many connections")
+        _log("ERROR", traceback.format_exc())
+        return _error_json("Cơ sở dữ liệu quá tải. Vui lòng thử lại sau.")
+    except asyncpg.InvalidPasswordError:
+        _log("ERROR", "Invalid password")
+        _log("ERROR", traceback.format_exc())
+        return _error_json("Lỗi xác thực cơ sở dữ liệu. Kiểm tra mật khẩu.")
     except asyncpg.PostgresError as e:
         _log("ERROR", f"PostgreSQL error: {e}")
         _log("ERROR", traceback.format_exc())
-        raise ValueError(f"Lỗi cơ sở dữ liệu: {str(e)}")
-    except asyncpg.TooManyConnectionsError as e:
-        _log("ERROR", "Too many connections")
+        return _error_json(f"Lỗi cơ sở dữ liệu: {str(e)}")
+    except (ConnectionError, OSError) as e:
+        _log("ERROR", f"Connection error: {e}")
         _log("ERROR", traceback.format_exc())
-        raise ValueError("Cơ sở dữ liệu quá tải. Vui lòng thử lại sau.")
-    except asyncpg.InvalidPasswordError as e:
-        _log("ERROR", "Invalid password")
-        _log("ERROR", traceback.format_exc())
-        raise ValueError("Lỗi xác thực cơ sở dữ liệu. Kiểm tra mật khẩu.")
-    except asyncpg.TargetServerRejectedException as e:
-        _log("ERROR", "Server rejected connection")
-        _log("ERROR", traceback.format_exc())
-        raise ValueError("Máy chủ cơ sở dữ liệu từ chối kết nối. Kiểm tra cấu hình.")
+        return _error_json("Không kết nối được máy chủ cơ sở dữ liệu. Kiểm tra cấu hình/kết nối.")
     except asyncio.TimeoutError:
         _log("ERROR", "Connection timeout")
         _log("ERROR", traceback.format_exc())
-        raise ValueError("Hết thời gian chờ kết nối cơ sở dữ liệu.")
+        return _error_json("Hết thời gian chờ kết nối cơ sở dữ liệu.")
     except Exception as e:
         _log("ERROR", f"Unexpected error occurred: {e}")
         _log("ERROR", traceback.format_exc())
-        raise ValueError(f"Lỗi không xác định: {str(e)}")
+        # ValueError nội bộ (schema/bảng không hợp lệ) giữ nguyên thông điệp, còn lại dùng bản thân thiện.
+        message = str(e) if isinstance(e, ValueError) else _product_error_message(e)
+        return _error_json(message)
