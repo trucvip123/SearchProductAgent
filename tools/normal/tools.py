@@ -35,6 +35,7 @@ class ProductMemory:
     capacity: Optional[str] = None      # dung lượng (ổ cứng ngoài, NAS): 3TB, 8TB, ...
     interface: Optional[str] = None     # giao tiếp: USB 3.0, PCIe, SAS, ...
     price_range: Optional[str] = None   # khoảng giá: "dưới 5 triệu", "10-20 triệu", ...
+    product_link: Optional[str] = None  # link sản phẩm: URL để xem chi tiết, ...
 
     def to_search_tokens(self) -> List[str]:
         """Trả về danh sách token có nghĩa để tạo DB search pattern."""
@@ -154,6 +155,7 @@ class SearchProductsArgs(BaseModel):
     capacity: Optional[str] = Field(default=None, description='Dung lượng ổ cứng ngoài / NAS. VD: "3TB", "8TB".')
     interface: Optional[str] = Field(default=None, description='Giao tiếp. VD: "USB 3.0", "PCIe 4.0".')
     price_range: Optional[str] = Field(default=None, description='Khoảng giá. VD: "dưới 5 triệu", "10-20 triệu".')
+    product_link: Optional[str] = Field(default=None, description='Link sản phẩm. VD: "https://example.com/product/123".')
 
     @field_validator("user_query", mode="before")
     @classmethod
@@ -189,7 +191,7 @@ class SearchProductsArgs(BaseModel):
 
     @field_validator(
         "product_type", "brand", "series", "model", "cpu",
-        "ram", "storage", "capacity", "interface", "price_range",
+        "ram", "storage", "capacity", "interface", "price_range", "product_link",
         mode="before",
     )
     @classmethod
@@ -213,6 +215,7 @@ async def search_products(
     capacity: Optional[str] = None,
     interface: Optional[str] = None,
     price_range: Optional[str] = None,
+    product_link: Optional[str] = None,
 ) -> str:
     """Tìm kiếm thông tin thiết bị từ PostgreSQL Vector Database.
 
@@ -233,6 +236,7 @@ async def search_products(
         capacity:     Dung lượng ổ cứng ngoài / NAS. VD: "3TB", "8TB".
         interface:    Giao tiếp. VD: "USB 3.0", "PCIe 4.0", "SAS 12Gbps".
         price_range:  Khoảng giá. VD: "dưới 5 triệu", "10-20 triệu".
+        product_link: Link sản phẩm. VD: "https://example.com/product/123".
 
     Returns:
         JSON string chứa danh sách sản phẩm phù hợp từ PostgreSQL.
@@ -249,6 +253,7 @@ async def search_products(
         capacity=capacity,
         interface=interface,
         price_range=price_range,
+        product_link=product_link,
     )
     memory_tokens = memory.to_search_tokens()
 
@@ -479,13 +484,19 @@ async def search_products(
                     if m_config:
                         config = m_config.group(1).strip()
 
+                    # Extract link sản phẩm từ text_value
+                    product_link_from_text = "N/A"
+                    m_link = re.search(r"Trang sản phẩm:\s*(https?://[^\s\)]+|[^\s\)]+)", text_value, re.IGNORECASE)
+                    if m_link:
+                        product_link_from_text = m_link.group(1).strip()
+
                     for candidate in ["DELL", "HPE", "ASUS", "SSN", "LENOVO", "SUPERMICRO", "AMD", "INTEL", "WD", "SEAGATE", "SYNOLOGY"]:
                         if candidate in text_value.upper():
                             brand = candidate; break
                     products.append({
                         "id": str(row.get("id")),
                         "tên": name, "giá": price, "hãng": brand,
-                        "cấu_hình": config, "_score": score,
+                        "cấu_hình": config, "link_sản_phẩm": product_link_from_text, "_score": score,
                     })
 
             else:
