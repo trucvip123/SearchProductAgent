@@ -44,18 +44,92 @@ def _extract_current_product(tool_content: str) -> str | None:
     return None
 
 
-def _build_effective_query(input_query: str, current_product: str | None) -> str:
+def _is_topic_change(input_query: str, current_product: str | None, verbose: bool = False) -> bool:
+    """Phát hiện topic change dựa trên entity mismatch.
+
+    Nếu user đề cập brand/entity khác với current_product → topic change.
+    Không enrich query khi đã phát hiện topic change.
+    """
+    if not current_product:
+        return False
+
+    # Brand/entity mapping: keyword trong query → brand
+    brand_keywords: dict[str, list[str]] = {
+        "intel":      ["intel", "xeon", "core i", "pentium", "celeron"],
+        "amd":        ["amd", "opteron", "ryzen", "epyc", "athlon"],
+        "dell":       ["dell", "poweredge"],
+        "hpe":        ["hpe", "proliant", "hewlett"],
+        "asus":       ["asus"],
+        "lenovo":     ["lenovo", "thinkpad", "thinkcentre"],
+        "supermicro": ["supermicro"],
+        "wd":         ["western digital", "wd "],
+        "seagate":    ["seagate"],
+        "synology":   ["synology"],
+    }
+
+    query_lower = input_query.lower()
+    product_lower = current_product.lower()
+
+    # Tìm brand của current_product
+    current_brand: str | None = None
+    for brand, keywords in brand_keywords.items():
+        if any(kw in product_lower for kw in keywords):
+            current_brand = brand
+            break
+
+    # Tìm brand trong query mới
+    query_brand: str | None = None
+    for brand, keywords in brand_keywords.items():
+        if any(kw in query_lower for kw in keywords):
+            query_brand = brand
+            break
+
+    if verbose:
+        _log(f"  [TOPIC_DETECT] current_brand={current_brand}, query_brand={query_brand}")
+
+    # Nếu cả hai đều có brand và khác nhau → topic change
+    if current_brand and query_brand and current_brand != query_brand:
+        if verbose:
+            _log(f"  [TOPIC_DETECT] MATCH → Topic change (brand mismatch: {current_brand} vs {query_brand})")
+        return True
+
+    # Explicit topic change keywords
+    explicit_change = ["sản phẩm khác", "tìm cái khác", "thay đổi", "loại khác", "cái khác"]
+    for kw in explicit_change:
+        if kw in query_lower:
+            if verbose:
+                _log(f"  [TOPIC_DETECT] MATCH → Topic change (keyword: '{kw}')")
+            return True
+
+    if verbose:
+        _log(f"  [TOPIC_DETECT] No match → Same topic")
+    return False
+
+
+def _build_effective_query(input_query: str, current_product: str | None, verbose: bool = False) -> str:
     """Ghép current_product vào đầu query nếu chưa có trong query.
 
     Nếu query đã chứa tên/keyword sản phẩm thì giữ nguyên.
+    Nếu phát hiện topic change thì không enrich.
     """
     if not current_product:
+        if verbose:
+            _log(f"  [QUERY_BUILD] No current_product → keep query as-is")
         return input_query
     if current_product.lower() in input_query.lower():
+        if verbose:
+            _log(f"  [QUERY_BUILD] current_product already in query → keep as-is")
+        return input_query
+    if _is_topic_change(input_query, current_product, verbose=verbose):
+        if verbose:
+            _log(f"  [QUERY_BUILD] Topic change detected → keep query as-is (no enrich)")
         return input_query
     # Lấy keyword ngắn gọn nhất từ tên sản phẩm (bỏ các từ chung như Model, Product)
     short = re.sub(r'\b(Model|Product|Series|Type)\b', '', current_product, flags=re.IGNORECASE).strip()
-    return f"{short} {input_query}"
+    enriched = f"{short} {input_query}"
+    if verbose:
+        _log(f"  [QUERY_BUILD] Enriching query → '{enriched}'")
+    return enriched
 
 
 async def main():
@@ -70,21 +144,33 @@ async def main():
     while True:
         input_query = input("Enter the query: ")
         _log(f"Received user query: {input_query}")
+        _log(f"Current context: product='{current_product}'")
 
         # Ghép current_product vào query nếu chưa có → tool có context follow-up.
-        effective_query = _build_effective_query(input_query, current_product)
+        # Nếu phát hiện topic change → KHÔNG enrich, reset current_product.
+        _log("[TOPIC_DETECTION] Checking if topic changed...")
+        if _is_topic_change(input_query, current_product, verbose=verbose_logs):
+            _log(f"[TOPIC_DETECTION] ✓ Topic change detected → resetting context (was: '{current_product}')")
+            current_product = None
+        else:
+            _log(f"[TOPIC_DETECTION] ✓ Same topic (continuing with current context)")
+        
+        _log("[QUERY_BUILD] Building effective query...")
+        effective_query = _build_effective_query(input_query, current_product, verbose=verbose_logs)
         os.environ["RUN_USER_QUERY"] = effective_query
         if effective_query != input_query:
-            _log(f"RUN_USER_QUERY (enriched): '{effective_query}'")
+            _log(f"[QUERY_BUILD] ✓ Query enriched: '{input_query}' → '{effective_query}'")
         else:
-            _log(f"RUN_USER_QUERY: '{effective_query}'")
+            _log(f"[QUERY_BUILD] ✓ Query unchanged: '{effective_query}'")
 
         messages.append(HumanMessage(content=input_query))
-        _log(f"Conversation items before run: {len(messages)}")
+        _log(f"[STATE] Messages: {len(messages)} items, current_product: {current_product or 'None'}")
 
-        _log("Started streamed run")
+        _log("[RUN] Starting agent stream...")
         streamed_chunks: list[str] = []
         final_state = None
+        tool_calls_made: list[str] = []
+        tool_results_received: dict[str, int] = {}  # tool_name → product_count
 
         async for mode, data in orchestrator_agent.astream(
             {"messages": messages},
@@ -100,23 +186,40 @@ async def main():
                     if verbose_logs:
                         for tc in getattr(chunk, "tool_call_chunks", None) or []:
                             if tc.get("name"):
-                                _log(f"Stream event: TOOL_CALL name={tc['name']}")
+                                tool_name = tc['name']
+                                tool_calls_made.append(tool_name)
+                                _log(f"[STREAM] TOOL_CALL: name={tool_name}")
                 elif isinstance(chunk, ToolMessage):
                     # Cập nhật current_product từ kết quả tool — luôn chạy bất kể verbose.
                     if chunk.name == "search_products":
-                        extracted = _extract_current_product(chunk.content or "")
-                        if extracted:
-                            current_product = extracted
-                            _log(f"current_product updated: '{current_product}'")
-                    if verbose_logs:
-                        output = repr(chunk.content)[:200]
-                        _log(f"Stream event: TOOL_RESULT name={chunk.name} output={output}")
+                        try:
+                            result_data = json.loads(chunk.content or "{}")
+                            product_count = len(result_data.get("products", []))
+                            tool_results_received[chunk.name] = product_count
+                            _log(f"[STREAM] TOOL_RESULT: {chunk.name} returned {product_count} products")
+                            
+                            extracted = _extract_current_product(chunk.content or "")
+                            if extracted:
+                                old_product = current_product
+                                current_product = extracted
+                                _log(f"[STATE] current_product updated: '{old_product}' → '{current_product}'")
+                        except json.JSONDecodeError:
+                            _log(f"[STREAM] TOOL_RESULT: {chunk.name} (parse error)")
+                    else:
+                        if verbose_logs:
+                            output = repr(chunk.content)[:200]
+                            _log(f"[STREAM] TOOL_RESULT: name={chunk.name} output={output}")
             elif mode == "values":
                 final_state = data
 
         # Cập nhật lịch sử hội thoại từ state cuối cùng của graph.
         if final_state and final_state.get("messages"):
             messages = final_state["messages"]
+            _log(f"[STATE] Updated conversation messages: {len(messages)} items")
+
+        _log(f"[RUN_SUMMARY] Tool calls: {tool_calls_made}, Results: {tool_results_received}")
+        _log(f"[RUN_SUMMARY] Streamed {len(streamed_chunks)} chunks, Final product: {current_product or 'None'}")
+        _log("─" * 80)
 
         final_response = ""
         if final_state and final_state.get("messages"):
