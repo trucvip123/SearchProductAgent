@@ -65,29 +65,50 @@ POSTGRES_TABLE=products
 
 ## Cách chạy
 
+### 1. CLI Mode (Terminal)
+
 Chạy chương trình chính:
 
 ```bash
 python main.py
 ```
 
-## Cách sử dụng tương tác
-
 Sau khi chạy `python main.py`, chương trình sẽ mở một vòng lặp nhập liệu trong terminal:
 
 1. Gõ câu hỏi hoặc yêu cầu của bạn vào dòng `Enter the query:`.
 2. Nhấn `Enter` để gửi.
 3. Agent sẽ trả lời trực tiếp trong terminal.
-4. Bạn có thể tiếp tục nhập câu hỏi mới ngay sau đó để hỏi tiếp theo ngữ cảnh cũ.
-
-Ví dụ:
-
-```text
-Enter the query: Tìm máy chủ Dell dưới 300k
-Enter the query: Tìm thông tin về Kubernetes
-```
+4. Bạn có thể tiếp tục nhập câu hỏi mới ngay sau đó.
 
 Thoát bằng `Ctrl + C`.
+
+### 2. Web UI Mode (Streamlit) - 🎉 **RECOMMENDED**
+
+Chạy Streamlit UI để tương tác thuận tiện hơn:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Ứng dụng sẽ mở ở `http://localhost:8501` với các tính năng:
+
+- ✅ **Chat Interface**: Giao diện chat thân thiện
+- ✅ **Context Tracking**: Hiển thị sản phẩm hiện tại đang hỏi
+- ✅ **Topic Detection**: Tự động phát hiện thay đổi topic
+- ✅ **Tool Visibility**: Hiển thị công cụ được gọi và kết quả
+- ✅ **Detailed Logging**: Panel logs chi tiết mỗi bước
+- ✅ **Statistics**: Thống kê số tin nhắn, tool calls, logs...
+- ✅ **Verbose Mode**: Tắt/bật chi tiết logs
+- ✅ **Session Management**: Reset lịch sử hội thoại
+  
+**Giao diện Streamlit bao gồm:**
+- 🧠 Sidebar cài đặt (Verbose mode, Log display, etc.)
+- 💬 Chat display area (tin nhắn user & agent)
+- 📋 Log panel (logs chi tiết)
+- 📈 Statistics (metrics)
+- 📌 Current context display (sản phẩm hiện tại)
+
+## Cách sử dụng tương tác
 
 ## Ví dụ sử dụng
 

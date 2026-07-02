@@ -5,3 +5,4 @@ langgraph
 asyncpg
 httpx
 python-dotenv
+streamlit
