@@ -18,6 +18,7 @@ from langchain_core.messages import (
 )
 
 from agent import orchestrator_agent, LOCAL_MODEL
+from tools.normal.tools import search_products
 
 
 def _is_verbose_enabled() -> bool:
@@ -42,6 +43,86 @@ def _extract_current_product(tool_content: str) -> str | None:
     except (json.JSONDecodeError, AttributeError):
         pass
     return None
+
+
+def _extract_balanced_json(text: str, start_idx: int) -> str | None:
+    """Extract the first balanced JSON object starting at/after start_idx."""
+    open_idx = text.find("{", start_idx)
+    if open_idx == -1:
+        return None
+
+    depth = 0
+    in_string = False
+    escaped = False
+    for idx in range(open_idx, len(text)):
+        ch = text[idx]
+        if escaped:
+            escaped = False
+            continue
+        if ch == "\\":
+            escaped = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[open_idx: idx + 1]
+
+    return None
+
+
+def _extract_pseudo_search_products_args(text: str) -> dict | None:
+    """Detect pseudo tool-call text and extract search_products args JSON."""
+    marker = "to=search_products"
+    marker_idx = text.find(marker)
+    if marker_idx == -1:
+        return None
+
+    raw_json = _extract_balanced_json(text, marker_idx)
+    if not raw_json:
+        return None
+
+    try:
+        payload = json.loads(raw_json)
+    except json.JSONDecodeError:
+        return None
+
+    return payload if isinstance(payload, dict) else None
+
+
+def _format_search_products_result(tool_content: str) -> str:
+    """Render search tool JSON into a concise, user-facing Vietnamese response."""
+    try:
+        data = json.loads(tool_content)
+    except (json.JSONDecodeError, TypeError):
+        return tool_content.strip() if isinstance(tool_content, str) else ""
+
+    status = data.get("status")
+    if status == "error":
+        return data.get("message") or "Đã xảy ra lỗi khi tra cứu dữ liệu sản phẩm."
+
+    if status == "no_products":
+        return data.get("message") or "Không tìm thấy sản phẩm phù hợp trong dữ liệu hiện tại."
+
+    products = data.get("products") or []
+    if not products:
+        return "Không tìm thấy sản phẩm phù hợp trong dữ liệu hiện tại."
+
+    lines = [f"Tìm thấy {len(products)} sản phẩm phù hợp:"]
+    for idx, p in enumerate(products[:10], 1):
+        name = p.get("tên") or "N/A"
+        price = p.get("giá") or "N/A"
+        brand = p.get("hãng") or "Unknown"
+        lines.append(f"{idx}. {name} | Giá: {price} | Hãng: {brand}")
+
+    return "\n".join(lines)
 
 
 def _is_topic_change(input_query: str, current_product: str | None, verbose: bool = False) -> bool:
@@ -217,10 +298,6 @@ async def main():
             messages = final_state["messages"]
             _log(f"[STATE] Updated conversation messages: {len(messages)} items")
 
-        _log(f"[RUN_SUMMARY] Tool calls: {tool_calls_made}, Results: {tool_results_received}")
-        _log(f"[RUN_SUMMARY] Streamed {len(streamed_chunks)} chunks, Final product: {current_product or 'None'}")
-        _log("─" * 80)
-
         final_response = ""
         if final_state and final_state.get("messages"):
             last = final_state["messages"][-1]
@@ -228,6 +305,33 @@ async def main():
                 final_response = last.content.strip()
         if not final_response:
             final_response = "".join(streamed_chunks).strip()
+
+        # Fallback: model in pseudo tool-call text instead of making a real tool call.
+        if not tool_calls_made and not tool_results_received:
+            pseudo_args = _extract_pseudo_search_products_args(final_response)
+            if pseudo_args is not None:
+                _log(f"[FALLBACK] Detected pseudo tool-call. Executing search_products with args={pseudo_args}")
+                try:
+                    tool_content = await search_products.ainvoke(pseudo_args)
+                    try:
+                        parsed = json.loads(tool_content or "{}")
+                        tool_results_received["search_products"] = len(parsed.get("products") or [])
+                    except (json.JSONDecodeError, AttributeError):
+                        tool_results_received["search_products"] = 0
+
+                    extracted = _extract_current_product(tool_content or "")
+                    if extracted:
+                        old_product = current_product
+                        current_product = extracted
+                        _log(f"[STATE] current_product updated by fallback: '{old_product}' → '{current_product}'")
+
+                    final_response = _format_search_products_result(tool_content or "")
+                except Exception as exc:
+                    _log(f"[FALLBACK] Failed to execute pseudo tool-call: {exc}")
+
+        _log(f"[RUN_SUMMARY] Tool calls: {tool_calls_made}, Results: {tool_results_received}")
+        _log(f"[RUN_SUMMARY] Streamed {len(streamed_chunks)} chunks, Final product: {current_product or 'None'}")
+        _log("─" * 80)
 
         if final_response:
             _log(f"\nFinal assistant response: {final_response}")

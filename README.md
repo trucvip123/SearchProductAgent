@@ -125,6 +125,37 @@ File `main.py` đang gọi `orchestrator_agent` trong một vòng lặp nhập l
 - `local_assistant_agent`
 - `server_product_agent`
 
+## Kiến trúc Hybrid Search khuyến nghị
+
+Với `server_product_agent`, luồng tìm kiếm sản phẩm nên đi theo mô hình Hybrid Search sau:
+
+```mermaid
+flowchart TD
+	A[User Query] --> B[Intent Parser]
+	B --> C[SQL Filter / Metadata Filter]
+	C --> D[Vector Search]
+	C --> E[Keyword Search / FTS]
+	D --> F[RRF]
+	E --> F[RRF]
+	F --> G[LLM]
+```
+
+### Luồng xử lý
+
+1. **Intent Parser**: tách ý định và slot quan trọng từ câu hỏi, ví dụ `brand = Lenovo`, `category = Laptop`, `price <= 20M`.
+2. **SQL Filter (metadata)**: lọc nhanh các điều kiện cấu trúc như hãng, danh mục, mức giá, model, series.
+3. **Vector Search**: tìm các sản phẩm gần nghĩa theo embedding để bắt được truy vấn tự nhiên hoặc mơ hồ.
+4. **Keyword Search / FTS**: bổ sung các kết quả khớp từ khóa hoặc full-text search.
+5. **RRF**: gộp các danh sách kết quả bằng Reciprocal Rank Fusion để giữ được cả độ chính xác lẫn độ phủ.
+6. **LLM**: đọc tập kết quả cuối cùng và tạo câu trả lời tự nhiên cho user.
+
+### Vì sao nên dùng kiến trúc này
+
+- SQL filter xử lý tốt các điều kiện rõ ràng như brand, price, category.
+- Vector search xử lý tốt truy vấn dài, tự nhiên, hoặc không có từ khóa khớp chính xác.
+- RRF giúp kết hợp nhiều nguồn ranking mà không phụ thuộc hoàn toàn vào một chiến lược duy nhất.
+- LLM chỉ nhận tập kết quả đã được thu gọn, nên trả lời ổn định và ít nhiễu hơn.
+
 ## Cấu trúc thư mục
 
 ```text
