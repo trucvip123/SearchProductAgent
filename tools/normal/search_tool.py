@@ -16,6 +16,7 @@ from .intent_filters import (
     _build_search_intent,
     _build_metadata_filter_clauses,
     _deduplicate_products,
+    _expand_query_with_product_type_aliases,
     _filter_products_by_intent,
     _filter_products_with_specific_price,
     _is_price_comparison_query,
@@ -182,12 +183,20 @@ async def search_products(
     if rule_normalized_query != base_query:
         _log("NORMALIZE", f"final_normalized_query='{base_query}' from rule='{rule_normalized_query}'")
     _log("MEMORY", f"ProductMemory={memory.to_log_dict()}")
-    _log("GUARD", f"base_query='{base_query}', effective_query='{effective_query}'")
 
     intent = _build_search_intent(memory, base_query, effective_query)
+    expanded_effective_query = _expand_query_with_product_type_aliases(effective_query, intent.product_type)
+    if expanded_effective_query != effective_query:
+        _log(
+            "NORMALIZE",
+            f"product_type_expanded_query='{expanded_effective_query}' from effective='{effective_query}'",
+        )
+    effective_query = expanded_effective_query
+    _log("GUARD", f"base_query='{base_query}', effective_query='{effective_query}'")
     _log("INTENT", f"SearchIntent={intent.to_log_dict()}")
 
-    fts_text = " ".join(memory_tokens) if memory_tokens else effective_query
+    fts_seed = " ".join(memory_tokens) if memory_tokens else effective_query
+    fts_text = _expand_query_with_product_type_aliases(fts_seed, intent.product_type)
     _log("HYBRID", f"fts_text='{fts_text}'")
 
     kw_pats: List[str] = [f"%{t}%" for t in memory_tokens]
@@ -300,6 +309,19 @@ async def search_products(
                         params.extend([emb_str, max_results * 4])
                         vec_rows_n8n = await conn.fetch(vec_sql, *params)
                         _log("HYBRID", f"Vector(n8n)={len(vec_rows_n8n)} rows ({1000 * (time.perf_counter() - t0):.0f}ms)")
+                        if vec_rows_n8n:
+                            vector_products = []
+                            for row in vec_rows_n8n:
+                                text_value = row.get("text") or ""
+                                m_name = re.search(r"Tên sản phẩm:\s*(.+?)(?:\.|Giá)", text_value)
+                                product_name = m_name.group(1).strip() if m_name else "N/A"
+                                vector_products.append(
+                                    {
+                                        "id": str(row.get("id")),
+                                        "tên": product_name,
+                                    }
+                                )
+                            _log("HYBRID", f"Vector(n8n) product_list={json.dumps(vector_products, ensure_ascii=False)}")
                         if vector_trace and vec_rows_n8n:
                             top_ids = [str(r.get("id")) for r in vec_rows_n8n[:5]]
                             _log("VECTOR_TRACE", f"top_ids={top_ids}")
@@ -397,6 +419,7 @@ async def search_products(
                         "cấu_hình": config,
                         "link_sản_phẩm": product_link_from_text,
                         "_score": score,
+                        "_text": text_value,
                     }
                 )
 
@@ -441,6 +464,9 @@ async def search_products(
                     },
                     ensure_ascii=False,
                 )
+
+            for product in products:
+                product.pop("_text", None)
 
             _log("DONE", f"Successfully found {len(products)} products from PostgreSQL")
             return json.dumps(

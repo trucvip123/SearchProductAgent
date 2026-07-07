@@ -8,6 +8,7 @@ sys.path.insert(0, r'c:\Users\ADMIN\Downloads\SearchProductAgent\SearchProductAg
 
 from tools.normal.tools import (
     _build_search_intent,
+    _expand_query_with_product_type_aliases,
     _filter_products_by_intent,
     _filter_products_with_specific_price,
     _is_price_comparison_query,
@@ -151,3 +152,66 @@ assert len(typo_filtered) == 1, "Expected only <=20M product after normalization
 assert typo_filtered[0]["tên"] == "Lenovo Ideapad Slim 3", "Expected 19.5M product only"
 
 print("\n✅ Query normalization test passed!")
+
+# Test 6: Product type filtering using raw source text
+print("\n" + "=" * 80)
+print("TEST 6: Product Type Filtering For Monitor Query")
+print("=" * 80)
+
+memory_monitor = ProductMemory(product_type="màn hình máy tính", brand=None, price_range="dưới 2 triệu")
+intent_monitor = _build_search_intent(
+    memory_monitor,
+    "cho tôi danh sách màn hình máy tính dưới 2 triêuuj",
+    "cho tôi danh sách màn hình máy tính dưới 2 triêuuj",
+)
+print(f"Parsed monitor intent: {intent_monitor.to_log_dict()}")
+assert intent_monitor.product_type == "màn hình máy tính", "Expected monitor product_type"
+assert intent_monitor.price_max == 2_000_000, "Expected monitor max=2M"
+
+monitor_products = [
+    {
+        "tên": '19" ASUS VW195S',
+        "giá": "1,950,000 VND",
+        "hãng": "ASUS",
+        "cấu_hình": "LCD 19 inch",
+        "_text": "Tên sản phẩm: Màn hình LCD 19\" ASUS VW195S. Giá bán: 1,950,000 VND",
+    },
+    {
+        "tên": "BỘ LƯU ĐIỆN AR9010G4RT 10KVA 10KW",
+        "giá": "1,800,000 VND",
+        "hãng": "Unknown",
+        "cấu_hình": "Online UPS",
+        "_text": "Tên sản phẩm: Bộ lưu điện AR9010G4RT 10KVA 10KW. Giá bán: 1,800,000 VND",
+    },
+]
+monitor_filtered = _filter_products_by_intent(monitor_products, intent_monitor)
+print(f"Monitor filtered count: {len(monitor_filtered)}")
+for i, p in enumerate(monitor_filtered, 1):
+    print(f"  {i}. {p['tên']:30} | Giá: {p['giá']:15}")
+
+assert len(monitor_filtered) == 1, "Expected only monitor products under 2M"
+assert monitor_filtered[0]["tên"] == '19" ASUS VW195S', "Expected monitor result only"
+
+print("\n✅ Monitor product-type filtering test passed!")
+
+# Test 7: Product type synonym expansion for retrieval query
+print("\n" + "=" * 80)
+print("TEST 7: Product Type Synonym Expansion")
+print("=" * 80)
+
+expanded_monitor_query = _expand_query_with_product_type_aliases(
+    "dưới 2 triệu cho tôi danh sách màn hình máy tính dưới 2 triệu",
+    "màn hình máy tính",
+)
+print(f"Expanded monitor query: {expanded_monitor_query}")
+assert "monitor" in expanded_monitor_query.lower(), "Expected monitor alias in expanded query"
+assert "lcd" in expanded_monitor_query.lower(), "Expected lcd alias in expanded query"
+
+expanded_laptop_query = _expand_query_with_product_type_aliases(
+    "laptop lenovo dưới 20 triệu",
+    "laptop",
+)
+print(f"Expanded laptop query: {expanded_laptop_query}")
+assert "notebook" in expanded_laptop_query.lower(), "Expected notebook alias in expanded query"
+
+print("\n✅ Product type synonym expansion test passed!")

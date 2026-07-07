@@ -24,11 +24,22 @@ _KNOWN_BRANDS = {
 _PRODUCT_TYPE_PATTERNS = [
     (r"\b(laptop|notebook|ultrabook)\b", "laptop"),
     (r"\b(may chu|máy chu|server|rack server)\b", "máy chủ"),
+    (r"\b(man hinh|màn hình|monitor|lcd)\b", "màn hình máy tính"),
     (r"\b(o cung ngoai|ổ cứng ngoài|external hdd|external drive)\b", "ổ cứng ngoài"),
     (r"\b(nas)\b", "nas"),
     (r"\b(workstation)\b", "workstation"),
     (r"\b(thiet bi mang|thiết bị mạng|network device|switch|router|firewall)\b", "thiết bị mạng"),
 ]
+
+_PRODUCT_TYPE_MATCH_ALIASES = {
+    "laptop": ["laptop", "notebook", "ultrabook", "thinkpad", "ideapad", "latitude"],
+    "máy chủ": ["máy chủ", "may chu", "server", "poweredge", "proliant", "thinksystem"],
+    "màn hình máy tính": ["màn hình", "man hinh", "monitor", "lcd", "display"],
+    "ổ cứng ngoài": ["ổ cứng ngoài", "o cung ngoai", "external hdd", "external drive"],
+    "nas": ["nas", "network attached storage"],
+    "workstation": ["workstation"],
+    "thiết bị mạng": ["thiết bị mạng", "thiet bi mang", "network device", "switch", "router", "firewall"],
+}
 
 _PRICE_SKIP_KEYWORDS = [
     "liên hệ",
@@ -140,6 +151,37 @@ def _extract_product_type(query: str) -> Optional[str]:
         if re.search(pattern, query_lower, re.IGNORECASE):
             return canonical
     return None
+
+
+def _get_product_type_aliases(product_type: Optional[str]) -> List[str]:
+    if not product_type:
+        return []
+
+    normalized_type = _normalize_user_query(product_type)
+    aliases = _PRODUCT_TYPE_MATCH_ALIASES.get(normalized_type, [product_type])
+
+    seen = set()
+    ordered_aliases: List[str] = []
+    for alias in aliases:
+        alias_text = _normalize_query_text(alias)
+        alias_key = alias_text.lower()
+        if alias_text and alias_key not in seen:
+            seen.add(alias_key)
+            ordered_aliases.append(alias_text)
+    return ordered_aliases
+
+
+def _expand_query_with_product_type_aliases(query: str, product_type: Optional[str]) -> str:
+    base_query = _normalize_query_text(query)
+    if not base_query or not product_type:
+        return base_query
+
+    base_query_lower = base_query.lower()
+    additions = [alias for alias in _get_product_type_aliases(product_type) if alias.lower() not in base_query_lower]
+    if not additions:
+        return base_query
+
+    return _normalize_query_text(" ".join([base_query] + additions))
 
 
 def _price_token_to_vnd(amount_text: str, unit_text: Optional[str]) -> Optional[int]:
@@ -419,6 +461,11 @@ def _deduplicate_products(products: List[Dict]) -> List[Dict]:
     return deduplicated
 
 
+def _product_matches_type_intent(product_type: str, searchable_text: str) -> bool:
+    aliases = _get_product_type_aliases(product_type)
+    return any(alias and alias.lower() in searchable_text for alias in aliases)
+
+
 def _product_matches_text_intent(product: Dict, intent: SearchIntent) -> bool:
     product_name = str(product.get("tên") or product.get("id") or "N/A")
     fields_to_check = [
@@ -428,8 +475,13 @@ def _product_matches_text_intent(product: Dict, intent: SearchIntent) -> bool:
         product.get("description"),
         product.get("config"),
         product.get("text"),
+        product.get("_text"),
     ]
     searchable_text = _normalize_query_text(" ".join(str(value or "") for value in fields_to_check)).lower()
+
+    if intent.product_type and not _product_matches_type_intent(intent.product_type, searchable_text):
+        _log("INTENT_FILTER", f"reject '{product_name}': product_type mismatch '{intent.product_type}'")
+        return False
 
     for value in [intent.brand, intent.series, intent.model]:
         if value and value.lower() not in searchable_text:

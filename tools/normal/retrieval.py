@@ -36,7 +36,27 @@ def _rrf_merge(
     max_results: int,
     k: int = 60,
 ) -> List:
-    """Merge FTS + Vector + Keyword results using Reciprocal Rank Fusion."""
+    """Merge FTS + Vector + Keyword results using Reciprocal Rank Fusion.
+
+    Rows are deduplicated per source before scoring so repeated items
+    do not get unfair score boosts from the same retrieval branch.
+    """
+
+    def _dedupe_rows(rows: List) -> List:
+        seen = set()
+        unique_rows = []
+        for row in rows:
+            key = key_fn(row)
+            if key in seen:
+                continue
+            seen.add(key)
+            unique_rows.append(row)
+        return unique_rows
+
+    fts_rows = _dedupe_rows(fts_rows)
+    vec_rows = _dedupe_rows(vec_rows)
+    kw_rows = _dedupe_rows(kw_rows)
+
     scores: Dict[str, float] = {}
     store: Dict[str, Any] = {}
 
