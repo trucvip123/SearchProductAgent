@@ -5,6 +5,20 @@ import re
 from typing import Optional
 
 
+def _is_more_results_followup(query_lower: str) -> bool:
+    q = (query_lower or "").strip()
+    if not q:
+        return False
+
+    patterns = [
+        r"\bc[oò]n\b.*\bkh[aá]c\b",
+        r"s[aả]n\s*ph[aẩ]m\s*n[aà]o\s*kh[aá]c",
+        r"ngo[aà]i\s+ra",
+        r"kh[aá]c\s*(ko|kh[oô]ng)",
+    ]
+    return any(re.search(pattern, q) for pattern in patterns)
+
+
 def extract_current_product(tool_content: str) -> Optional[str]:
     """Trích tên sản phẩm đầu tiên từ JSON kết quả tool."""
     try:
@@ -38,6 +52,11 @@ def is_topic_change(input_query: str, current_product: Optional[str]) -> bool:
     query_lower = input_query.lower()
     product_lower = current_product.lower()
 
+    # "còn ... khác" usually means ask for more results under current constraints,
+    # not a topic switch.
+    if _is_more_results_followup(query_lower):
+        return False
+
     current_brand = None
     for brand, keywords in brand_keywords.items():
         if any(kw in product_lower for kw in keywords):
@@ -53,7 +72,16 @@ def is_topic_change(input_query: str, current_product: Optional[str]) -> bool:
     if current_brand and query_brand and current_brand != query_brand:
         return True
 
-    explicit_change = ["sản phẩm khác", "tìm cái khác", "thay đổi", "loại khác", "cái khác"]
+    explicit_change = [
+        "thay đổi",
+        "đổi sang",
+        "chuyển sang",
+        "hãng khác",
+        "brand khác",
+        "loại khác",
+        "dòng khác",
+        "model khác",
+    ]
     if any(kw in query_lower for kw in explicit_change):
         return True
 
@@ -62,6 +90,8 @@ def is_topic_change(input_query: str, current_product: Optional[str]) -> bool:
 
 def build_effective_query(input_query: str, current_product: Optional[str]) -> str:
     """Ghép current_product vào đầu query nếu chưa có."""
+    if _is_more_results_followup(input_query.lower()):
+        return input_query
     if not current_product:
         return input_query
     if current_product.lower() in input_query.lower():

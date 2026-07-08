@@ -3042,3 +3042,1664 @@ Dựa trên ngữ
 [2026-07-08 08:53:31] 🛠️ Tool calls: []
 [2026-07-08 08:53:31] 📈 Tool results: {'search_products': 1}
 [2026-07-08 08:53:31] 📨 Displaying agent response (219 chars)
+[2026-07-08 09:07:40] ============================================================
+[2026-07-08 09:07:40] 🚀 Streamlit app initialized
+[2026-07-08 09:07:40] Model: llama3.1:8b
+[2026-07-08 09:07:40] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:07:40] ============================================================
+[2026-07-08 09:07:43] ============================================================
+[2026-07-08 09:07:43] 🚀 Streamlit app initialized
+[2026-07-08 09:07:43] Model: llama3.1:8b
+[2026-07-08 09:07:43] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:07:43] ============================================================
+[2026-07-08 09:07:43] 📝 User input received: hi
+[2026-07-08 09:07:43] 🤖 Starting agent execution...
+[2026-07-08 09:07:43] ✓ Same topic: keeping context
+[2026-07-08 09:07:43] ✓ Query unchanged
+[2026-07-08 09:07:43] Running agent with 1 messages...
+[2026-07-08 09:07:43]   Message 0: HumanMessage - hi
+[2026-07-08 09:07:43] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:07:43]   [Values] State has 1 messages
+[2026-07-08 09:07:43]   [Values] State has 1 messages
+[2026-07-08 09:07:46]   ✅ AIMessage (full) - content len: 64
+[2026-07-08 09:07:46]   [Values] State has 2 messages
+[2026-07-08 09:07:46] ✓ Agent streaming complete (29 chunks)
+[2026-07-08 09:07:46] ✓ Agent response ready (64 chars)
+[2026-07-08 09:07:46]   Response preview: Xin chào! Tôi là trợ lý VNPT Gia Lai. Bạn cần hỗ trợ gì hôm nay?
+[2026-07-08 09:07:46] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:07:46] ✅ Agent execution completed successfully
+[2026-07-08 09:07:46] 📊 Response length: 64 chars
+[2026-07-08 09:07:46] 🛠️ Tool calls: []
+[2026-07-08 09:07:46] 📈 Tool results: {}
+[2026-07-08 09:07:46] 📨 Displaying agent response (64 chars)
+[2026-07-08 09:17:06] ============================================================
+[2026-07-08 09:17:06] 🚀 Streamlit app initialized
+[2026-07-08 09:17:06] Model: llama3.1:8b
+[2026-07-08 09:17:06] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:17:06] ============================================================
+[2026-07-08 09:18:23] ============================================================
+[2026-07-08 09:18:23] 🚀 Streamlit app initialized
+[2026-07-08 09:18:23] Model: llama3.1:8b
+[2026-07-08 09:18:23] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:18:23] ============================================================
+[2026-07-08 09:20:03] ============================================================
+[2026-07-08 09:20:03] 🚀 Streamlit app initialized
+[2026-07-08 09:20:03] Model: llama3.1:8b
+[2026-07-08 09:20:03] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:20:03] ============================================================
+[2026-07-08 09:20:03] 📝 User input received: tìm cho tôi laptop tầm 15 triệu
+[2026-07-08 09:20:03] 🤖 Starting agent execution...
+[2026-07-08 09:20:03] ✓ Same topic: keeping context
+[2026-07-08 09:20:03] ✓ Query unchanged
+[2026-07-08 09:20:03] Running agent with 3 messages...
+[2026-07-08 09:20:03]   Message 0: HumanMessage - hi
+[2026-07-08 09:20:03]   Message 1: AIMessage - Xin chào! Tôi là trợ lý VNPT Gia Lai. Bạn cần hỗ trợ gì hôm nay?
+[2026-07-08 09:20:03]   Message 2: HumanMessage - tìm cho tôi laptop tầm 15 triệu
+[2026-07-08 09:20:03] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:20:03]   [Values] State has 3 messages
+[2026-07-08 09:20:03]   [Values] State has 3 messages
+[2026-07-08 09:20:19]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:20:19]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:20:19] 📊 TOOL_RESULT: search_products → 3 products
+[2026-07-08 09:20:19] ✓ Product detected: Lenovo IdeaPad U450P - 18...
+[2026-07-08 09:20:19]   ✅ AIMessage (full) - content len: 407
+[2026-07-08 09:20:19]        Added to response: Bạn có thể xem xét các lựa chọn sau:
+
+* Lenovo IdeaPad U450P - 18: Giá 19,130,000 VND, cấu hình Inte
+[2026-07-08 09:20:19]   [Values] State has 6 messages
+[2026-07-08 09:20:19] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:20:19] ✓ Agent response ready (407 chars)
+[2026-07-08 09:20:19]   Response preview: Bạn có thể xem xét các lựa chọn sau:
+
+* Lenovo IdeaPad U450P - 18: Giá 19,130,000 VND, cấu hình Intel Core 2 Duo SU7300 1.3GHz, DDR3 2GB, HDD 320GB.
+*
+[2026-07-08 09:20:19] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:20:19] ✅ Agent execution completed successfully
+[2026-07-08 09:20:19] 📊 Response length: 407 chars
+[2026-07-08 09:20:19] 🛠️ Tool calls: []
+[2026-07-08 09:20:19] 📈 Tool results: {'search_products': 3}
+[2026-07-08 09:20:19] 📨 Displaying agent response (407 chars)
+[2026-07-08 09:21:45] ============================================================
+[2026-07-08 09:21:45] 🚀 Streamlit app initialized
+[2026-07-08 09:21:45] Model: llama3.1:8b
+[2026-07-08 09:21:45] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:21:45] ============================================================
+[2026-07-08 09:21:45] 📝 User input received: xin link 
+[2026-07-08 09:21:45] 🤖 Starting agent execution...
+[2026-07-08 09:21:45] ✓ Same topic: keeping context
+[2026-07-08 09:21:45] ✓ Query enriched: 'Lenovo IdeaPad U450P - 18 xin link '
+[2026-07-08 09:21:45] ✓ Added query enrichment context
+[2026-07-08 09:21:45] Running agent with 8 messages...
+[2026-07-08 09:21:45]   Message 0: HumanMessage - hi
+[2026-07-08 09:21:45]   Message 1: AIMessage - Xin chào! Tôi là trợ lý VNPT Gia Lai. Bạn cần hỗ trợ gì hôm nay?
+[2026-07-08 09:21:45]   Message 2: HumanMessage - tìm cho tôi laptop tầm 15 triệu
+[2026-07-08 09:21:45]   Message 3: AIMessage - 
+[2026-07-08 09:21:45]   Message 4: ToolMessage - {
+  "status": "success",
+  "count": 3,
+  "query": "15-20 triệu tìm cho tôi lapto
+[2026-07-08 09:21:45]   Message 5: AIMessage - Bạn có thể xem xét các lựa chọn sau:
+
+* Lenovo IdeaPad U450P - 18: Giá 19,130,00
+[2026-07-08 09:21:45]   Message 6: SystemMessage - [Ngữ cảnh: Lenovo IdeaPad U450P - 18 xin link ]
+
+Dựa trên ngữ cảnh trên, hãy tìm
+[2026-07-08 09:21:45]   Message 7: HumanMessage - xin link 
+[2026-07-08 09:21:45] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:21:45]   [Values] State has 8 messages
+[2026-07-08 09:21:45]   [Values] State has 8 messages
+[2026-07-08 09:21:48] ============================================================
+[2026-07-08 09:21:48] 🚀 Streamlit app initialized
+[2026-07-08 09:21:48] Model: llama3.1:8b
+[2026-07-08 09:21:48] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:21:48] ============================================================
+[2026-07-08 09:21:48] 📝 User input received: tìm thông tin về Fortinet FortiGate 90G, 
+[2026-07-08 09:21:48] 🤖 Starting agent execution...
+[2026-07-08 09:21:48] ✓ Same topic: keeping context
+[2026-07-08 09:21:48] ✓ Query unchanged
+[2026-07-08 09:21:48] Running agent with 1 messages...
+[2026-07-08 09:21:48]   Message 0: HumanMessage - tìm thông tin về Fortinet FortiGate 90G, 
+[2026-07-08 09:21:48] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:21:48]   [Values] State has 1 messages
+[2026-07-08 09:21:48]   [Values] State has 1 messages
+[2026-07-08 09:21:50]   ✅ AIMessage (full) - content len: 244
+[2026-07-08 09:21:50]   [Values] State has 2 messages
+[2026-07-08 09:21:50] ✓ Agent streaming complete (69 chunks)
+[2026-07-08 09:21:50] ✓ Agent response ready (244 chars)
+[2026-07-08 09:21:50]   Response preview: Tôi không tìm thấy thông tin chi tiết về sản phẩm "Fortinet FortiGate 90G" trong cơ sở dữ liệu của chúng tôi. Để có thông tin chính xác hơn, bạn vui l
+[2026-07-08 09:21:50] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:21:50] ✅ Agent execution completed successfully
+[2026-07-08 09:21:50] 📊 Response length: 244 chars
+[2026-07-08 09:21:50] 🛠️ Tool calls: []
+[2026-07-08 09:21:50] 📈 Tool results: {}
+[2026-07-08 09:21:50] 📨 Displaying agent response (244 chars)
+[2026-07-08 09:21:59]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:21:59]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:21:59] 📊 TOOL_RESULT: search_products → 5 products
+[2026-07-08 09:21:59] ✓ Product detected: Lenovo IdeaPad U450P - 18...
+[2026-07-08 09:21:59]   ✅ AIMessage (full) - content len: 632
+[2026-07-08 09:21:59]        Added to response: Bạn có thể xem xét các lựa chọn sau:
+
+* Lenovo IdeaPad U450P - 18: Giá 19,130,000 VND, cấu hình Inte
+[2026-07-08 09:21:59]   [Values] State has 11 messages
+[2026-07-08 09:21:59] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:21:59] ✓ Agent response ready (632 chars)
+[2026-07-08 09:21:59]   Response preview: Bạn có thể xem xét các lựa chọn sau:
+
+* Lenovo IdeaPad U450P - 18: Giá 19,130,000 VND, cấu hình Intel Core 2 Duo SU7300 1.3GHz, DDR3 2GB, HDD 320GB.
+*
+[2026-07-08 09:21:59] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:21:59] ✅ Agent execution completed successfully
+[2026-07-08 09:21:59] 📊 Response length: 632 chars
+[2026-07-08 09:21:59] 🛠️ Tool calls: []
+[2026-07-08 09:21:59] 📈 Tool results: {'search_products': 5}
+[2026-07-08 09:21:59] 📨 Displaying agent response (632 chars)
+[2026-07-08 09:22:10] ============================================================
+[2026-07-08 09:22:10] 🚀 Streamlit app initialized
+[2026-07-08 09:22:10] Model: llama3.1:8b
+[2026-07-08 09:22:10] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:22:10] ============================================================
+[2026-07-08 09:22:10] 📝 User input received: xin link Lenovo IdeaPad U450P - 18
+[2026-07-08 09:22:10] 🤖 Starting agent execution...
+[2026-07-08 09:22:10] ✓ Same topic: keeping context
+[2026-07-08 09:22:10] ✓ Query unchanged
+[2026-07-08 09:22:10] Running agent with 12 messages...
+[2026-07-08 09:22:10]   Message 0: HumanMessage - hi
+[2026-07-08 09:22:10]   Message 1: AIMessage - Xin chào! Tôi là trợ lý VNPT Gia Lai. Bạn cần hỗ trợ gì hôm nay?
+[2026-07-08 09:22:10]   Message 2: HumanMessage - tìm cho tôi laptop tầm 15 triệu
+[2026-07-08 09:22:10]   Message 3: AIMessage - 
+[2026-07-08 09:22:10]   Message 4: ToolMessage - {
+  "status": "success",
+  "count": 3,
+  "query": "15-20 triệu tìm cho tôi lapto
+[2026-07-08 09:22:10]   Message 5: AIMessage - Bạn có thể xem xét các lựa chọn sau:
+
+* Lenovo IdeaPad U450P - 18: Giá 19,130,00
+[2026-07-08 09:22:10]   Message 6: SystemMessage - [Ngữ cảnh: Lenovo IdeaPad U450P - 18 xin link ]
+
+Dựa trên ngữ cảnh trên, hãy tìm
+[2026-07-08 09:22:10]   Message 7: HumanMessage - xin link 
+[2026-07-08 09:22:10]   Message 8: AIMessage - 
+[2026-07-08 09:22:10]   Message 9: ToolMessage - {
+  "status": "success",
+  "count": 5,
+  "query": "lenovo ideapad u450p - 18 xin
+[2026-07-08 09:22:10]   Message 10: AIMessage - Bạn có thể xem xét các lựa chọn sau:
+
+* Lenovo IdeaPad U450P - 18: Giá 19,130,00
+[2026-07-08 09:22:10]   Message 11: HumanMessage - xin link Lenovo IdeaPad U450P - 18
+[2026-07-08 09:22:10] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:22:10]   [Values] State has 12 messages
+[2026-07-08 09:22:10]   [Values] State has 12 messages
+[2026-07-08 09:22:22]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:22:22]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:22:22] 📊 TOOL_RESULT: search_products → 5 products
+[2026-07-08 09:22:22] ✓ Product detected: Lenovo IdeaPad U450P - 18...
+[2026-07-08 09:22:22]   ✅ AIMessage (full) - content len: 130
+[2026-07-08 09:22:22]        Added to response: Link sản phẩm Lenovo IdeaPad U450P - 18 là: https://www.sieuthimaychu.vn/index.php/Thong_Tin_San_Pha
+[2026-07-08 09:22:22]   [Values] State has 15 messages
+[2026-07-08 09:22:22] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:22:22] ✓ Agent response ready (130 chars)
+[2026-07-08 09:22:22]   Response preview: Link sản phẩm Lenovo IdeaPad U450P - 18 là: https://www.sieuthimaychu.vn/index.php/Thong_Tin_San_Pham/802/Lenovo-IdeaPad-U450P-18.
+[2026-07-08 09:22:22] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:22:22] ✅ Agent execution completed successfully
+[2026-07-08 09:22:22] 📊 Response length: 130 chars
+[2026-07-08 09:22:22] 🛠️ Tool calls: []
+[2026-07-08 09:22:22] 📈 Tool results: {'search_products': 5}
+[2026-07-08 09:22:22] 📨 Displaying agent response (130 chars)
+[2026-07-08 09:23:58] ============================================================
+[2026-07-08 09:23:58] 🚀 Streamlit app initialized
+[2026-07-08 09:23:58] Model: llama3.1:8b
+[2026-07-08 09:23:58] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:23:58] ============================================================
+[2026-07-08 09:23:58] 📝 User input received: tìm thông tin về Dell MX7000
+[2026-07-08 09:23:58] 🤖 Starting agent execution...
+[2026-07-08 09:23:58] ✓ Same topic: keeping context
+[2026-07-08 09:23:58] ✓ Query unchanged
+[2026-07-08 09:23:58] Running agent with 3 messages...
+[2026-07-08 09:23:58]   Message 0: HumanMessage - tìm thông tin về Fortinet FortiGate 90G, 
+[2026-07-08 09:23:58]   Message 1: AIMessage - Tôi không tìm thấy thông tin chi tiết về sản phẩm "Fortinet FortiGate 90G" trong
+[2026-07-08 09:23:58]   Message 2: HumanMessage - tìm thông tin về Dell MX7000
+[2026-07-08 09:23:58] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:23:58]   [Values] State has 3 messages
+[2026-07-08 09:23:58]   [Values] State has 3 messages
+[2026-07-08 09:24:07]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:24:07]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:24:07] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:24:07]   ✅ AIMessage (full) - content len: 274
+[2026-07-08 09:24:07]        Added to response: Tôi không tìm thấy thông tin chi tiết về sản phẩm "Dell MX7000" trong cơ sở dữ liệu của chúng tôi. C
+[2026-07-08 09:24:07]   [Values] State has 6 messages
+[2026-07-08 09:24:07] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:24:07] ✓ Agent response ready (274 chars)
+[2026-07-08 09:24:07]   Response preview: Tôi không tìm thấy thông tin chi tiết về sản phẩm "Dell MX7000" trong cơ sở dữ liệu của chúng tôi. Có thể sản phẩm này chưa được cập nhật hoặc không t
+[2026-07-08 09:24:07] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:24:07] ✅ Agent execution completed successfully
+[2026-07-08 09:24:07] 📊 Response length: 274 chars
+[2026-07-08 09:24:07] 🛠️ Tool calls: []
+[2026-07-08 09:24:07] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:24:07] 📨 Displaying agent response (274 chars)
+[2026-07-08 09:30:21] ============================================================
+[2026-07-08 09:30:21] 🚀 Streamlit app initialized
+[2026-07-08 09:30:21] Model: llama3.1:8b
+[2026-07-08 09:30:21] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:30:21] ============================================================
+[2026-07-08 09:30:21] 📝 User input received: tìm thông số kỹ thuật của Synology DS925+
+[2026-07-08 09:30:21] 🤖 Starting agent execution...
+[2026-07-08 09:30:21] ✓ Same topic: keeping context
+[2026-07-08 09:30:21] ✓ Query unchanged
+[2026-07-08 09:30:21] Running agent with 7 messages...
+[2026-07-08 09:30:21]   Message 0: HumanMessage - tìm thông tin về Fortinet FortiGate 90G, 
+[2026-07-08 09:30:21]   Message 1: AIMessage - Tôi không tìm thấy thông tin chi tiết về sản phẩm "Fortinet FortiGate 90G" trong
+[2026-07-08 09:30:21]   Message 2: HumanMessage - tìm thông tin về Dell MX7000
+[2026-07-08 09:30:21]   Message 3: AIMessage - 
+[2026-07-08 09:30:21]   Message 4: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'tìm 
+[2026-07-08 09:30:21]   Message 5: AIMessage - Tôi không tìm thấy thông tin chi tiết về sản phẩm "Dell MX7000" trong cơ sở dữ l
+[2026-07-08 09:30:21]   Message 6: HumanMessage - tìm thông số kỹ thuật của Synology DS925+
+[2026-07-08 09:30:21] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:30:21]   [Values] State has 7 messages
+[2026-07-08 09:30:21]   [Values] State has 7 messages
+[2026-07-08 09:30:35]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:30:35]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:30:35] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:30:35]   ✅ AIMessage (full) - content len: 606
+[2026-07-08 09:30:35]        Added to response: Tôi không tìm thấy thông tin chi tiết về sản phẩm "Synology DS925+" trong cơ sở dữ liệu của chúng tô
+[2026-07-08 09:30:35]   [Values] State has 10 messages
+[2026-07-08 09:30:35] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:30:35] ✓ Agent response ready (606 chars)
+[2026-07-08 09:30:35]   Response preview: Tôi không tìm thấy thông tin chi tiết về sản phẩm "Synology DS925+" trong cơ sở dữ liệu của chúng tôi. Có thể sản phẩm này chưa được cập nhật hoặc khô
+[2026-07-08 09:30:35] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:30:35] ✅ Agent execution completed successfully
+[2026-07-08 09:30:35] 📊 Response length: 606 chars
+[2026-07-08 09:30:35] 🛠️ Tool calls: []
+[2026-07-08 09:30:35] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:30:35] 📨 Displaying agent response (606 chars)
+[2026-07-08 09:31:46] ============================================================
+[2026-07-08 09:31:46] 🚀 Streamlit app initialized
+[2026-07-08 09:31:46] Model: llama3.1:8b
+[2026-07-08 09:31:46] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:31:46] ============================================================
+[2026-07-08 09:31:46] 📝 User input received: cho tôi xin giá license microsoft 365
+[2026-07-08 09:31:46] 🤖 Starting agent execution...
+[2026-07-08 09:31:46] ✓ Same topic: keeping context
+[2026-07-08 09:31:46] ✓ Query unchanged
+[2026-07-08 09:31:46] Running agent with 1 messages...
+[2026-07-08 09:31:46]   Message 0: HumanMessage - cho tôi xin giá license microsoft 365
+[2026-07-08 09:31:46] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:31:46]   [Values] State has 1 messages
+[2026-07-08 09:31:46]   [Values] State has 1 messages
+[2026-07-08 09:31:47] ============================================================
+[2026-07-08 09:31:47] 🚀 Streamlit app initialized
+[2026-07-08 09:31:47] Model: llama3.1:8b
+[2026-07-08 09:31:47] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:31:47] ============================================================
+[2026-07-08 09:31:47] 📝 User input received: tìm thông số kỹ thuật của NAS DS925+
+[2026-07-08 09:31:47] 🤖 Starting agent execution...
+[2026-07-08 09:31:47] ✓ Same topic: keeping context
+[2026-07-08 09:31:47] ✓ Query unchanged
+[2026-07-08 09:31:47] Running agent with 11 messages...
+[2026-07-08 09:31:47]   Message 0: HumanMessage - tìm thông tin về Fortinet FortiGate 90G, 
+[2026-07-08 09:31:47]   Message 1: AIMessage - Tôi không tìm thấy thông tin chi tiết về sản phẩm "Fortinet FortiGate 90G" trong
+[2026-07-08 09:31:47]   Message 2: HumanMessage - tìm thông tin về Dell MX7000
+[2026-07-08 09:31:47]   Message 3: AIMessage - 
+[2026-07-08 09:31:47]   Message 4: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'tìm 
+[2026-07-08 09:31:47]   Message 5: AIMessage - Tôi không tìm thấy thông tin chi tiết về sản phẩm "Dell MX7000" trong cơ sở dữ l
+[2026-07-08 09:31:47]   Message 6: HumanMessage - tìm thông số kỹ thuật của Synology DS925+
+[2026-07-08 09:31:47]   Message 7: AIMessage - 
+[2026-07-08 09:31:47]   Message 8: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'tìm 
+[2026-07-08 09:31:47]   Message 9: AIMessage - Tôi không tìm thấy thông tin chi tiết về sản phẩm "Synology DS925+" trong cơ sở 
+[2026-07-08 09:31:47]   Message 10: HumanMessage - tìm thông số kỹ thuật của NAS DS925+
+[2026-07-08 09:31:47] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:31:47]   [Values] State has 11 messages
+[2026-07-08 09:31:47]   [Values] State has 11 messages
+[2026-07-08 09:31:52]   ✅ AIMessage (full) - content len: 653
+[2026-07-08 09:31:52]   [Values] State has 12 messages
+[2026-07-08 09:31:52] ✓ Agent streaming complete (206 chunks)
+[2026-07-08 09:31:52] ✓ Agent response ready (653 chars)
+[2026-07-08 09:31:52]   Response preview: Tôi có thể giúp bạn tìm thông số kỹ thuật của Synology DS925+. Đây là một sản phẩm NAS (Network-Attached Storage) được thiết kế bởi Synology.
+
+Dưới đâ
+[2026-07-08 09:31:52] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:31:52] ✅ Agent execution completed successfully
+[2026-07-08 09:31:52] 📊 Response length: 653 chars
+[2026-07-08 09:31:52] 🛠️ Tool calls: []
+[2026-07-08 09:31:52] 📈 Tool results: {}
+[2026-07-08 09:31:52] 📨 Displaying agent response (653 chars)
+[2026-07-08 09:31:56]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:31:56]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:31:56] 📊 TOOL_RESULT: search_products → 3 products
+[2026-07-08 09:31:56] ✓ Product detected: N/A...
+[2026-07-08 09:31:56]   ✅ AIMessage (full) - content len: 169
+[2026-07-08 09:31:56]        Added to response: Giá license Microsoft 365 không được tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông
+[2026-07-08 09:31:56]   [Values] State has 4 messages
+[2026-07-08 09:31:56] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:31:56] ✓ Agent response ready (169 chars)
+[2026-07-08 09:31:56]   Response preview: Giá license Microsoft 365 không được tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc từ khóa khác để tôi có thể giúp bạn tìm 
+[2026-07-08 09:31:56] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:31:56] ✅ Agent execution completed successfully
+[2026-07-08 09:31:56] 📊 Response length: 169 chars
+[2026-07-08 09:31:56] 🛠️ Tool calls: []
+[2026-07-08 09:31:56] 📈 Tool results: {'search_products': 3}
+[2026-07-08 09:31:56] 📨 Displaying agent response (169 chars)
+[2026-07-08 09:32:32] ============================================================
+[2026-07-08 09:32:32] 🚀 Streamlit app initialized
+[2026-07-08 09:32:32] Model: llama3.1:8b
+[2026-07-08 09:32:32] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:32:32] ============================================================
+[2026-07-08 09:32:32] 📝 User input received: máy chủ dell r760xs
+[2026-07-08 09:32:32] 🤖 Starting agent execution...
+[2026-07-08 09:32:32] ✓ Same topic: keeping context
+[2026-07-08 09:32:32] ✓ Query enriched: 'N/A máy chủ dell r760xs'
+[2026-07-08 09:32:32] ✓ Added query enrichment context
+[2026-07-08 09:32:32] Running agent with 6 messages...
+[2026-07-08 09:32:32]   Message 0: HumanMessage - cho tôi xin giá license microsoft 365
+[2026-07-08 09:32:32]   Message 1: AIMessage - 
+[2026-07-08 09:32:32]   Message 2: ToolMessage - {
+  "status": "success",
+  "count": 3,
+  "query": "phần mềm tìm thông số kỹ thuậ
+[2026-07-08 09:32:32]   Message 3: AIMessage - Giá license Microsoft 365 không được tìm thấy trong dữ liệu hiện tại. Bạn có thể
+[2026-07-08 09:32:32]   Message 4: SystemMessage - [Ngữ cảnh: N/A máy chủ dell r760xs]
+
+Dựa trên ngữ cảnh trên, hãy tìm kiếm sản ph
+[2026-07-08 09:32:32]   Message 5: HumanMessage - máy chủ dell r760xs
+[2026-07-08 09:32:32] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:32:32]   [Values] State has 6 messages
+[2026-07-08 09:32:32]   [Values] State has 6 messages
+[2026-07-08 09:32:41]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:32:41]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:32:41] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:32:41]   ✅ AIMessage (full) - content len: 138
+[2026-07-08 09:32:41]        Added to response: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc từ khóa khác để tôi c
+[2026-07-08 09:32:41]   [Values] State has 9 messages
+[2026-07-08 09:32:41] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:32:41] ✓ Agent response ready (138 chars)
+[2026-07-08 09:32:41]   Response preview: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc từ khóa khác để tôi có thể giúp bạn tìm kiếm chính xác hơn?
+[2026-07-08 09:32:41] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:32:41] ✅ Agent execution completed successfully
+[2026-07-08 09:32:41] 📊 Response length: 138 chars
+[2026-07-08 09:32:41] 🛠️ Tool calls: []
+[2026-07-08 09:32:41] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:32:41] 📨 Displaying agent response (138 chars)
+[2026-07-08 09:33:43] ============================================================
+[2026-07-08 09:33:43] 🚀 Streamlit app initialized
+[2026-07-08 09:33:43] Model: llama3.1:8b
+[2026-07-08 09:33:43] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:33:43] ============================================================
+[2026-07-08 09:33:43] 📝 User input received: Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 09:33:43] 🤖 Starting agent execution...
+[2026-07-08 09:33:43] ✓ Same topic: keeping context
+[2026-07-08 09:33:43] ✓ Query enriched: 'N/A Thiết Bị Lưu Trữ NAS Synology DS925+'
+[2026-07-08 09:33:43] ✓ Added query enrichment context
+[2026-07-08 09:33:43] Running agent with 11 messages...
+[2026-07-08 09:33:43]   Message 0: HumanMessage - cho tôi xin giá license microsoft 365
+[2026-07-08 09:33:43]   Message 1: AIMessage - 
+[2026-07-08 09:33:43]   Message 2: ToolMessage - {
+  "status": "success",
+  "count": 3,
+  "query": "phần mềm tìm thông số kỹ thuậ
+[2026-07-08 09:33:43]   Message 3: AIMessage - Giá license Microsoft 365 không được tìm thấy trong dữ liệu hiện tại. Bạn có thể
+[2026-07-08 09:33:43]   Message 4: SystemMessage - [Ngữ cảnh: N/A máy chủ dell r760xs]
+
+Dựa trên ngữ cảnh trên, hãy tìm kiếm sản ph
+[2026-07-08 09:33:43]   Message 5: HumanMessage - máy chủ dell r760xs
+[2026-07-08 09:33:43]   Message 6: AIMessage - 
+[2026-07-08 09:33:43]   Message 7: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'n/a 
+[2026-07-08 09:33:43]   Message 8: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc t
+[2026-07-08 09:33:43]   Message 9: SystemMessage - [Ngữ cảnh: N/A Thiết Bị Lưu Trữ NAS Synology DS925+]
+
+Dựa trên ngữ cảnh trên, hã
+[2026-07-08 09:33:43]   Message 10: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 09:33:43] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:33:43]   [Values] State has 11 messages
+[2026-07-08 09:33:43]   [Values] State has 11 messages
+[2026-07-08 09:33:52]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:33:52]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:33:52] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:33:52]   ✅ AIMessage (full) - content len: 138
+[2026-07-08 09:33:52]        Added to response: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc từ khóa khác để tôi c
+[2026-07-08 09:33:52]   [Values] State has 14 messages
+[2026-07-08 09:33:52] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:33:52] ✓ Agent response ready (138 chars)
+[2026-07-08 09:33:52]   Response preview: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc từ khóa khác để tôi có thể giúp bạn tìm kiếm chính xác hơn?
+[2026-07-08 09:33:52] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:33:52] ✅ Agent execution completed successfully
+[2026-07-08 09:33:52] 📊 Response length: 138 chars
+[2026-07-08 09:33:52] 🛠️ Tool calls: []
+[2026-07-08 09:33:52] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:33:52] 📨 Displaying agent response (138 chars)
+[2026-07-08 09:34:51] ============================================================
+[2026-07-08 09:34:51] 🚀 Streamlit app initialized
+[2026-07-08 09:34:51] Model: llama3.1:8b
+[2026-07-08 09:34:51] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:34:51] ============================================================
+[2026-07-08 09:34:51] 📝 User input received: Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 09:34:51] 🤖 Starting agent execution...
+[2026-07-08 09:34:51] ✓ Same topic: keeping context
+[2026-07-08 09:34:51] ✓ Query enriched: 'N/A Thiết Bị Lưu Trữ NAS Synology DS925+'
+[2026-07-08 09:34:51] ✓ Added query enrichment context
+[2026-07-08 09:34:51] Running agent with 16 messages...
+[2026-07-08 09:34:51]   Message 0: HumanMessage - cho tôi xin giá license microsoft 365
+[2026-07-08 09:34:51]   Message 1: AIMessage - 
+[2026-07-08 09:34:51]   Message 2: ToolMessage - {
+  "status": "success",
+  "count": 3,
+  "query": "phần mềm tìm thông số kỹ thuậ
+[2026-07-08 09:34:51]   Message 3: AIMessage - Giá license Microsoft 365 không được tìm thấy trong dữ liệu hiện tại. Bạn có thể
+[2026-07-08 09:34:51]   Message 4: SystemMessage - [Ngữ cảnh: N/A máy chủ dell r760xs]
+
+Dựa trên ngữ cảnh trên, hãy tìm kiếm sản ph
+[2026-07-08 09:34:51]   Message 5: HumanMessage - máy chủ dell r760xs
+[2026-07-08 09:34:51]   Message 6: AIMessage - 
+[2026-07-08 09:34:51]   Message 7: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'n/a 
+[2026-07-08 09:34:51]   Message 8: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc t
+[2026-07-08 09:34:51]   Message 9: SystemMessage - [Ngữ cảnh: N/A Thiết Bị Lưu Trữ NAS Synology DS925+]
+
+Dựa trên ngữ cảnh trên, hã
+[2026-07-08 09:34:51]   Message 10: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 09:34:51]   Message 11: AIMessage - 
+[2026-07-08 09:34:51]   Message 12: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'n/a 
+[2026-07-08 09:34:51]   Message 13: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc t
+[2026-07-08 09:34:51]   Message 14: SystemMessage - [Ngữ cảnh: N/A Thiết Bị Lưu Trữ NAS Synology DS925+]
+
+Dựa trên ngữ cảnh trên, hã
+[2026-07-08 09:34:51]   Message 15: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 09:34:51] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:34:51]   [Values] State has 16 messages
+[2026-07-08 09:34:51]   [Values] State has 16 messages
+[2026-07-08 09:35:00]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:35:00]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:35:00] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:35:00]   ✅ AIMessage (full) - content len: 138
+[2026-07-08 09:35:00]        Added to response: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc từ khóa khác để tôi c
+[2026-07-08 09:35:00]   [Values] State has 19 messages
+[2026-07-08 09:35:00] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:35:00] ✓ Agent response ready (138 chars)
+[2026-07-08 09:35:00]   Response preview: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin hoặc từ khóa khác để tôi có thể giúp bạn tìm kiếm chính xác hơn?
+[2026-07-08 09:35:00] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:35:00] ✅ Agent execution completed successfully
+[2026-07-08 09:35:00] 📊 Response length: 138 chars
+[2026-07-08 09:35:00] 🛠️ Tool calls: []
+[2026-07-08 09:35:00] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:35:00] 📨 Displaying agent response (138 chars)
+[2026-07-08 09:37:27] ============================================================
+[2026-07-08 09:37:27] 🚀 Streamlit app initialized
+[2026-07-08 09:37:27] Model: llama3.1:8b
+[2026-07-08 09:37:27] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:37:27] ============================================================
+[2026-07-08 09:37:29] ============================================================
+[2026-07-08 09:37:29] 🚀 Streamlit app initialized
+[2026-07-08 09:37:29] Model: llama3.1:8b
+[2026-07-08 09:37:29] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:37:29] ============================================================
+[2026-07-08 09:37:29] 📝 User input received: hi
+[2026-07-08 09:37:29] 🤖 Starting agent execution...
+[2026-07-08 09:37:29] ✓ Same topic: keeping context
+[2026-07-08 09:37:29] ✓ Query unchanged
+[2026-07-08 09:37:29] Running agent with 1 messages...
+[2026-07-08 09:37:29]   Message 0: HumanMessage - hi
+[2026-07-08 09:37:29] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:37:29]   [Values] State has 1 messages
+[2026-07-08 09:37:29]   [Values] State has 1 messages
+[2026-07-08 09:37:30]   ✅ AIMessage (full) - content len: 64
+[2026-07-08 09:37:30]   [Values] State has 2 messages
+[2026-07-08 09:37:30] ✓ Agent streaming complete (29 chunks)
+[2026-07-08 09:37:30] ✓ Agent response ready (64 chars)
+[2026-07-08 09:37:30]   Response preview: Xin chào! Tôi là trợ lý VNPT Gia Lai. Bạn cần hỗ trợ gì hôm nay?
+[2026-07-08 09:37:30] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:37:30] ✅ Agent execution completed successfully
+[2026-07-08 09:37:30] 📊 Response length: 64 chars
+[2026-07-08 09:37:30] 🛠️ Tool calls: []
+[2026-07-08 09:37:30] 📈 Tool results: {}
+[2026-07-08 09:37:30] 📨 Displaying agent response (64 chars)
+[2026-07-08 09:37:36] ============================================================
+[2026-07-08 09:37:36] 🚀 Streamlit app initialized
+[2026-07-08 09:37:36] Model: llama3.1:8b
+[2026-07-08 09:37:36] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:37:36] ============================================================
+[2026-07-08 09:37:36] 📝 User input received: Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 09:37:36] 🤖 Starting agent execution...
+[2026-07-08 09:37:36] ✓ Same topic: keeping context
+[2026-07-08 09:37:36] ✓ Query unchanged
+[2026-07-08 09:37:36] Running agent with 3 messages...
+[2026-07-08 09:37:36]   Message 0: HumanMessage - hi
+[2026-07-08 09:37:36]   Message 1: AIMessage - Xin chào! Tôi là trợ lý VNPT Gia Lai. Bạn cần hỗ trợ gì hôm nay?
+[2026-07-08 09:37:36]   Message 2: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 09:37:36] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:37:36]   [Values] State has 3 messages
+[2026-07-08 09:37:36]   [Values] State has 3 messages
+[2026-07-08 09:37:51]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:37:51]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:37:51] ❌ TOOL_ERROR: search_products → Không kết nối được máy chủ cơ sở dữ liệu. Kiểm tra cấu hình/kết nối.
+[2026-07-08 09:37:51]   ✅ AIMessage (full) - content len: 176
+[2026-07-08 09:37:51]        Added to response: Tôi xin lỗi vì không thể tìm thấy thông tin về sản phẩm Synology DS925+. Có thể do vấn đề kỹ thuật h
+[2026-07-08 09:37:51]   [Values] State has 6 messages
+[2026-07-08 09:37:51] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:37:51] ✓ Agent response ready (176 chars)
+[2026-07-08 09:37:51]   Response preview: Tôi xin lỗi vì không thể tìm thấy thông tin về sản phẩm Synology DS925+. Có thể do vấn đề kỹ thuật hoặc dữ liệu chưa cập nhật. Bạn có muốn thử lại với
+[2026-07-08 09:37:51] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:37:51] ✅ Agent execution completed successfully
+[2026-07-08 09:37:51] 📊 Response length: 176 chars
+[2026-07-08 09:37:51] 🛠️ Tool calls: []
+[2026-07-08 09:37:51] 📈 Tool results: {'search_products': 'ERROR: Không kết nối được máy chủ cơ sở dữ liệu. Kiểm tra cấu hình/kết nối.'}
+[2026-07-08 09:37:51] 📨 Displaying agent response (176 chars)
+[2026-07-08 09:41:51] ============================================================
+[2026-07-08 09:41:51] 🚀 Streamlit app initialized
+[2026-07-08 09:41:51] Model: llama3.1:8b
+[2026-07-08 09:41:51] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:41:51] ============================================================
+[2026-07-08 09:41:58] ============================================================
+[2026-07-08 09:41:58] 🚀 Streamlit app initialized
+[2026-07-08 09:41:58] Model: llama3.1:8b
+[2026-07-08 09:41:58] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:41:58] ============================================================
+[2026-07-08 09:41:58] 📝 User input received: Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 09:41:58] 🤖 Starting agent execution...
+[2026-07-08 09:41:59] ✓ Same topic: keeping context
+[2026-07-08 09:41:59] ✓ Query unchanged
+[2026-07-08 09:41:59] Running agent with 1 messages...
+[2026-07-08 09:41:59]   Message 0: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 09:41:59] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:41:59]   [Values] State has 1 messages
+[2026-07-08 09:41:59]   [Values] State has 1 messages
+[2026-07-08 09:42:09]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:42:09]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:42:09] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:42:09]   ✅ AIMessage (full) - content len: 122
+[2026-07-08 09:42:09]        Added to response: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+. Có thể bạn muốn hỏi
+[2026-07-08 09:42:09]   [Values] State has 4 messages
+[2026-07-08 09:42:09] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:42:09] ✓ Agent response ready (122 chars)
+[2026-07-08 09:42:09]   Response preview: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+. Có thể bạn muốn hỏi về một sản phẩm khác?
+[2026-07-08 09:42:09] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:42:09] ✅ Agent execution completed successfully
+[2026-07-08 09:42:09] 📊 Response length: 122 chars
+[2026-07-08 09:42:09] 🛠️ Tool calls: []
+[2026-07-08 09:42:09] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:42:09] 📨 Displaying agent response (122 chars)
+[2026-07-08 09:53:08] ============================================================
+[2026-07-08 09:53:08] 🚀 Streamlit app initialized
+[2026-07-08 09:53:08] Model: llama3.1:8b
+[2026-07-08 09:53:08] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:53:08] ============================================================
+[2026-07-08 09:53:08] 📝 User input received: tìm thông số của Synology NAS DS925*
+[2026-07-08 09:53:08] 🤖 Starting agent execution...
+[2026-07-08 09:53:08] ✓ Same topic: keeping context
+[2026-07-08 09:53:08] ✓ Query unchanged
+[2026-07-08 09:53:08] Running agent with 5 messages...
+[2026-07-08 09:53:08]   Message 0: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 09:53:08]   Message 1: AIMessage - 
+[2026-07-08 09:53:08]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'thiế
+[2026-07-08 09:53:08]   Message 3: AIMessage - Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+.
+[2026-07-08 09:53:08]   Message 4: HumanMessage - tìm thông số của Synology NAS DS925*
+[2026-07-08 09:53:08] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:53:08]   [Values] State has 5 messages
+[2026-07-08 09:53:08]   [Values] State has 5 messages
+[2026-07-08 09:53:23]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:53:23]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:53:23] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:53:23]   ✅ AIMessage (full) - content len: 278
+[2026-07-08 09:53:23]        Added to response: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm Synology DS925*. Có thể bạn muốn hỏi
+[2026-07-08 09:53:23]   [Values] State has 8 messages
+[2026-07-08 09:53:23] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:53:23] ✓ Agent response ready (278 chars)
+[2026-07-08 09:53:23]   Response preview: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm Synology DS925*. Có thể bạn muốn hỏi về một sản phẩm khác?
+
+Nếu bạn cần thông tin về t
+[2026-07-08 09:53:23] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:53:23] ✅ Agent execution completed successfully
+[2026-07-08 09:53:23] 📊 Response length: 278 chars
+[2026-07-08 09:53:23] 🛠️ Tool calls: []
+[2026-07-08 09:53:23] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:53:23] 📨 Displaying agent response (278 chars)
+[2026-07-08 09:54:43] ============================================================
+[2026-07-08 09:54:43] 🚀 Streamlit app initialized
+[2026-07-08 09:54:43] Model: llama3.1:8b
+[2026-07-08 09:54:43] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:54:43] ============================================================
+[2026-07-08 09:54:45] ============================================================
+[2026-07-08 09:54:45] 🚀 Streamlit app initialized
+[2026-07-08 09:54:45] Model: llama3.1:8b
+[2026-07-08 09:54:45] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:54:45] ============================================================
+[2026-07-08 09:54:45] 📝 User input received: 
+tìm thông số của Synology NAS DS925*
+[2026-07-08 09:54:45] 🤖 Starting agent execution...
+[2026-07-08 09:54:45] ✓ Same topic: keeping context
+[2026-07-08 09:54:45] ✓ Query unchanged
+[2026-07-08 09:54:45] Running agent with 1 messages...
+[2026-07-08 09:54:45]   Message 0: HumanMessage - 
+tìm thông số của Synology NAS DS925*
+[2026-07-08 09:54:45] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:54:45]   [Values] State has 1 messages
+[2026-07-08 09:54:45]   [Values] State has 1 messages
+[2026-07-08 09:54:53]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 09:54:53]   🛠️ ToolMessage from: search_products
+[2026-07-08 09:54:53] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 09:54:53]   ✅ AIMessage (full) - content len: 141
+[2026-07-08 09:54:53]        Added to response: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm từ khóa hoặc mô tả khác để tôi có th
+[2026-07-08 09:54:53]   [Values] State has 4 messages
+[2026-07-08 09:54:53] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 09:54:53] ✓ Agent response ready (141 chars)
+[2026-07-08 09:54:53]   Response preview: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm từ khóa hoặc mô tả khác để tôi có thể giúp bạn tìm kiếm sản phẩm phù hợp hơn?
+[2026-07-08 09:54:53] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:54:53] ✅ Agent execution completed successfully
+[2026-07-08 09:54:53] 📊 Response length: 141 chars
+[2026-07-08 09:54:53] 🛠️ Tool calls: []
+[2026-07-08 09:54:53] 📈 Tool results: {'search_products': 0}
+[2026-07-08 09:54:53] 📨 Displaying agent response (141 chars)
+[2026-07-08 09:56:20] ============================================================
+[2026-07-08 09:56:20] 🚀 Streamlit app initialized
+[2026-07-08 09:56:20] Model: llama3.1:8b
+[2026-07-08 09:56:20] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:56:20] ============================================================
+[2026-07-08 09:56:20] 📝 User input received: NAS DS925+
+[2026-07-08 09:56:20] 🤖 Starting agent execution...
+[2026-07-08 09:56:20] ✓ Same topic: keeping context
+[2026-07-08 09:56:20] ✓ Query unchanged
+[2026-07-08 09:56:20] Running agent with 5 messages...
+[2026-07-08 09:56:20]   Message 0: HumanMessage - 
+tìm thông số của Synology NAS DS925*
+[2026-07-08 09:56:20]   Message 1: AIMessage - 
+[2026-07-08 09:56:20]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'tìm 
+[2026-07-08 09:56:20]   Message 3: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm từ khóa hoặc mô 
+[2026-07-08 09:56:20]   Message 4: HumanMessage - NAS DS925+
+[2026-07-08 09:56:20] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 09:56:20]   [Values] State has 5 messages
+[2026-07-08 09:56:20]   [Values] State has 5 messages
+[2026-07-08 09:56:23]   ✅ AIMessage (full) - content len: 355
+[2026-07-08 09:56:23]   [Values] State has 6 messages
+[2026-07-08 09:56:23] ✓ Agent streaming complete (132 chunks)
+[2026-07-08 09:56:23] ✓ Agent response ready (355 chars)
+[2026-07-08 09:56:23]   Response preview: Tôi xin lỗi vì trước đó không tìm thấy thông tin về NAS DS925+. Dưới đây là một số thông số kỹ thuật của Synology NAS DS925+:
+
+- CPU: Intel Celeron J4
+[2026-07-08 09:56:23] ✓ ProductMemory persisted for next turn
+[2026-07-08 09:56:23] ✅ Agent execution completed successfully
+[2026-07-08 09:56:23] 📊 Response length: 355 chars
+[2026-07-08 09:56:23] 🛠️ Tool calls: []
+[2026-07-08 09:56:23] 📈 Tool results: {}
+[2026-07-08 09:56:23] 📨 Displaying agent response (355 chars)
+[2026-07-08 09:57:20] ============================================================
+[2026-07-08 09:57:20] 🚀 Streamlit app initialized
+[2026-07-08 09:57:20] Model: llama3.1:8b
+[2026-07-08 09:57:20] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:57:20] ============================================================
+[2026-07-08 09:57:31] ============================================================
+[2026-07-08 09:57:31] 🚀 Streamlit app initialized
+[2026-07-08 09:57:31] Model: llama3.1:8b
+[2026-07-08 09:57:31] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 09:57:31] ============================================================
+[2026-07-08 10:01:10] ============================================================
+[2026-07-08 10:01:10] 🚀 Streamlit app initialized
+[2026-07-08 10:01:10] Model: llama3.1:8b
+[2026-07-08 10:01:10] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:01:10] ============================================================
+[2026-07-08 10:01:24] ============================================================
+[2026-07-08 10:01:24] 🚀 Streamlit app initialized
+[2026-07-08 10:01:24] Model: llama3.1:8b
+[2026-07-08 10:01:24] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:01:24] ============================================================
+[2026-07-08 10:01:24] 📝 User input received: NAS DS925+
+[2026-07-08 10:01:24] 🤖 Starting agent execution...
+[2026-07-08 10:01:24] ✓ Same topic: keeping context
+[2026-07-08 10:01:24] ✓ Query unchanged
+[2026-07-08 10:01:24] Running agent with 1 messages...
+[2026-07-08 10:01:24]   Message 0: HumanMessage - NAS DS925+
+[2026-07-08 10:01:24] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 10:01:24]   [Values] State has 1 messages
+[2026-07-08 10:01:24]   [Values] State has 1 messages
+[2026-07-08 10:01:34]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 10:01:34]   🛠️ ToolMessage from: search_products
+[2026-07-08 10:01:34] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 10:01:34]   ✅ AIMessage (full) - content len: 108
+[2026-07-08 10:01:34]        Added to response: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về NAS DS925+. Có thể bạn muốn hỏi về một sản ph
+[2026-07-08 10:01:34]   [Values] State has 4 messages
+[2026-07-08 10:01:34] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 10:01:34] ✓ Agent response ready (108 chars)
+[2026-07-08 10:01:34]   Response preview: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về NAS DS925+. Có thể bạn muốn hỏi về một sản phẩm khác?
+[2026-07-08 10:01:34] ✓ ProductMemory persisted for next turn
+[2026-07-08 10:01:34] ✅ Agent execution completed successfully
+[2026-07-08 10:01:34] 📊 Response length: 108 chars
+[2026-07-08 10:01:34] 🛠️ Tool calls: []
+[2026-07-08 10:01:34] 📈 Tool results: {'search_products': 0}
+[2026-07-08 10:01:34] 📨 Displaying agent response (108 chars)
+[2026-07-08 10:05:24] ============================================================
+[2026-07-08 10:05:24] 🚀 Streamlit app initialized
+[2026-07-08 10:05:24] Model: llama3.1:8b
+[2026-07-08 10:05:24] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:05:24] ============================================================
+[2026-07-08 10:05:57] ============================================================
+[2026-07-08 10:05:57] 🚀 Streamlit app initialized
+[2026-07-08 10:05:57] Model: llama3.1:8b
+[2026-07-08 10:05:57] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:05:57] ============================================================
+[2026-07-08 10:05:57] 📝 User input received: tìm cho tôi thông số kỹ thuật thiết bị lưu trữ NAS DS925+
+[2026-07-08 10:05:57] 🤖 Starting agent execution...
+[2026-07-08 10:05:57] ✓ Same topic: keeping context
+[2026-07-08 10:05:57] ✓ Query unchanged
+[2026-07-08 10:05:57] Running agent with 1 messages...
+[2026-07-08 10:05:57]   Message 0: HumanMessage - tìm cho tôi thông số kỹ thuật thiết bị lưu trữ NAS DS925+
+[2026-07-08 10:05:57] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 10:05:57]   [Values] State has 1 messages
+[2026-07-08 10:05:57]   [Values] State has 1 messages
+[2026-07-08 10:06:07]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 10:06:07]   🛠️ ToolMessage from: search_products
+[2026-07-08 10:06:07] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 10:06:07]   ✅ AIMessage (full) - content len: 173
+[2026-07-08 10:06:07]        Added to response: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm NAS DS925+. Bạn có thể kiểm tra lại 
+[2026-07-08 10:06:07]   [Values] State has 4 messages
+[2026-07-08 10:06:07] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 10:06:07] ✓ Agent response ready (173 chars)
+[2026-07-08 10:06:07]   Response preview: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm NAS DS925+. Bạn có thể kiểm tra lại tên sản phẩm hoặc cung cấp thêm thông tin để tôi c
+[2026-07-08 10:06:07] ✓ ProductMemory persisted for next turn
+[2026-07-08 10:06:07] ✅ Agent execution completed successfully
+[2026-07-08 10:06:07] 📊 Response length: 173 chars
+[2026-07-08 10:06:07] 🛠️ Tool calls: []
+[2026-07-08 10:06:07] 📈 Tool results: {'search_products': 0}
+[2026-07-08 10:06:07] 📨 Displaying agent response (173 chars)
+[2026-07-08 10:06:35] ============================================================
+[2026-07-08 10:06:35] 🚀 Streamlit app initialized
+[2026-07-08 10:06:35] Model: llama3.1:8b
+[2026-07-08 10:06:35] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:06:35] ============================================================
+[2026-07-08 10:06:35] 📝 User input received: mô tả sản phẩm NAS DS925+
+[2026-07-08 10:06:35] 🤖 Starting agent execution...
+[2026-07-08 10:06:35] ✓ Same topic: keeping context
+[2026-07-08 10:06:35] ✓ Query unchanged
+[2026-07-08 10:06:35] Running agent with 5 messages...
+[2026-07-08 10:06:35]   Message 0: HumanMessage - tìm cho tôi thông số kỹ thuật thiết bị lưu trữ NAS DS925+
+[2026-07-08 10:06:35]   Message 1: AIMessage - 
+[2026-07-08 10:06:35]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'tìm 
+[2026-07-08 10:06:35]   Message 3: AIMessage - Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm NAS DS925+. Bạn 
+[2026-07-08 10:06:35]   Message 4: HumanMessage - mô tả sản phẩm NAS DS925+
+[2026-07-08 10:06:35] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 10:06:35]   [Values] State has 5 messages
+[2026-07-08 10:06:35]   [Values] State has 5 messages
+[2026-07-08 10:06:44]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 10:06:44]   🛠️ ToolMessage from: search_products
+[2026-07-08 10:06:44] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 10:06:44]   ✅ AIMessage (full) - content len: 302
+[2026-07-08 10:06:44]        Added to response: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm NAS DS925+. Bạn có thể kiểm tra lại 
+[2026-07-08 10:06:44]   [Values] State has 8 messages
+[2026-07-08 10:06:44] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 10:06:44] ✓ Agent response ready (302 chars)
+[2026-07-08 10:06:44]   Response preview: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm NAS DS925+. Bạn có thể kiểm tra lại tên sản phẩm hoặc cung cấp thêm thông tin để tôi c
+[2026-07-08 10:06:44] ✓ ProductMemory persisted for next turn
+[2026-07-08 10:06:44] ✅ Agent execution completed successfully
+[2026-07-08 10:06:44] 📊 Response length: 302 chars
+[2026-07-08 10:06:44] 🛠️ Tool calls: []
+[2026-07-08 10:06:44] 📈 Tool results: {'search_products': 0}
+[2026-07-08 10:06:44] 📨 Displaying agent response (302 chars)
+[2026-07-08 10:07:13] ============================================================
+[2026-07-08 10:07:13] 🚀 Streamlit app initialized
+[2026-07-08 10:07:13] Model: llama3.1:8b
+[2026-07-08 10:07:13] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:07:13] ============================================================
+[2026-07-08 10:07:13] 📝 User input received: tôi đang có 20 triệu, hãy tư vấn cho tôi thiết bị lưu trữ phù hợp dùng trong doanh nghiệp nhỏ
+[2026-07-08 10:07:13] 🤖 Starting agent execution...
+[2026-07-08 10:07:13] ✓ Same topic: keeping context
+[2026-07-08 10:07:13] ✓ Query unchanged
+[2026-07-08 10:07:13] Running agent with 9 messages...
+[2026-07-08 10:07:13]   Message 0: HumanMessage - tìm cho tôi thông số kỹ thuật thiết bị lưu trữ NAS DS925+
+[2026-07-08 10:07:13]   Message 1: AIMessage - 
+[2026-07-08 10:07:13]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'tìm 
+[2026-07-08 10:07:13]   Message 3: AIMessage - Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm NAS DS925+. Bạn 
+[2026-07-08 10:07:13]   Message 4: HumanMessage - mô tả sản phẩm NAS DS925+
+[2026-07-08 10:07:13]   Message 5: AIMessage - 
+[2026-07-08 10:07:13]   Message 6: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'thiế
+[2026-07-08 10:07:13]   Message 7: AIMessage - Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về sản phẩm NAS DS925+. Bạn 
+[2026-07-08 10:07:13]   Message 8: HumanMessage - tôi đang có 20 triệu, hãy tư vấn cho tôi thiết bị lưu trữ phù hợp dùng trong doa
+[2026-07-08 10:07:13] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 10:07:13]   [Values] State has 9 messages
+[2026-07-08 10:07:13]   [Values] State has 9 messages
+[2026-07-08 10:07:25]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 10:07:25]   🛠️ ToolMessage from: search_products
+[2026-07-08 10:07:25] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 10:07:25]   ✅ AIMessage (full) - content len: 695
+[2026-07-08 10:07:25]        Added to response: Với ngân sách 20 triệu đồng, bạn có thể xem xét các sản phẩm sau:
+
+* Synology DS218+: Đây là một thi
+[2026-07-08 10:07:25]   [Values] State has 12 messages
+[2026-07-08 10:07:25] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 10:07:25] ✓ Agent response ready (695 chars)
+[2026-07-08 10:07:25]   Response preview: Với ngân sách 20 triệu đồng, bạn có thể xem xét các sản phẩm sau:
+
+* Synology DS218+: Đây là một thiết bị lưu trữ NAS cao cấp với khả năng lưu trữ lên
+[2026-07-08 10:07:25] ✓ ProductMemory persisted for next turn
+[2026-07-08 10:07:25] ✅ Agent execution completed successfully
+[2026-07-08 10:07:25] 📊 Response length: 695 chars
+[2026-07-08 10:07:25] 🛠️ Tool calls: []
+[2026-07-08 10:07:25] 📈 Tool results: {'search_products': 0}
+[2026-07-08 10:07:25] 📨 Displaying agent response (695 chars)
+[2026-07-08 10:11:29] ============================================================
+[2026-07-08 10:11:29] 🚀 Streamlit app initialized
+[2026-07-08 10:11:29] Model: llama3.1:8b
+[2026-07-08 10:11:29] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:11:29] ============================================================
+[2026-07-08 10:12:04] ============================================================
+[2026-07-08 10:12:04] 🚀 Streamlit app initialized
+[2026-07-08 10:12:04] Model: llama3.1:8b
+[2026-07-08 10:12:04] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:12:04] ============================================================
+[2026-07-08 10:12:04] 📝 User input received: cho tôi thông số kỹ thuật của DS218+
+[2026-07-08 10:12:04] 🤖 Starting agent execution...
+[2026-07-08 10:12:04] ✓ Same topic: keeping context
+[2026-07-08 10:12:04] ✓ Query unchanged
+[2026-07-08 10:12:04] Running agent with 1 messages...
+[2026-07-08 10:12:04]   Message 0: HumanMessage - cho tôi thông số kỹ thuật của DS218+
+[2026-07-08 10:12:04] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 10:12:04]   [Values] State has 1 messages
+[2026-07-08 10:12:04]   [Values] State has 1 messages
+[2026-07-08 10:12:15]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 10:12:15]   🛠️ ToolMessage from: search_products
+[2026-07-08 10:12:15] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 10:12:15]   ✅ AIMessage (full) - content len: 560
+[2026-07-08 10:12:15]        Added to response: Tôi xin lỗi vì không thể tìm thấy thông tin về DS218+. Có thể bạn muốn hỏi về một sản phẩm khác?
+
+Nế
+[2026-07-08 10:12:15]   [Values] State has 4 messages
+[2026-07-08 10:12:15] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 10:12:15] ✓ Agent response ready (560 chars)
+[2026-07-08 10:12:15]   Response preview: Tôi xin lỗi vì không thể tìm thấy thông tin về DS218+. Có thể bạn muốn hỏi về một sản phẩm khác?
+
+Nếu bạn muốn biết thông số kỹ thuật của Synology DS2
+[2026-07-08 10:12:15] ✓ ProductMemory persisted for next turn
+[2026-07-08 10:12:15] ✅ Agent execution completed successfully
+[2026-07-08 10:12:15] 📊 Response length: 560 chars
+[2026-07-08 10:12:15] 🛠️ Tool calls: []
+[2026-07-08 10:12:15] 📈 Tool results: {'search_products': 0}
+[2026-07-08 10:12:15] 📨 Displaying agent response (560 chars)
+[2026-07-08 10:16:11] ============================================================
+[2026-07-08 10:16:11] 🚀 Streamlit app initialized
+[2026-07-08 10:16:11] Model: llama3.1:8b
+[2026-07-08 10:16:11] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:16:11] ============================================================
+[2026-07-08 10:37:00] ============================================================
+[2026-07-08 10:37:00] 🚀 Streamlit app initialized
+[2026-07-08 10:37:00] Model: llama3.1:8b
+[2026-07-08 10:37:00] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 10:37:00] ============================================================
+[2026-07-08 11:01:37] ============================================================
+[2026-07-08 11:01:37] 🚀 Streamlit app initialized
+[2026-07-08 11:01:37] Model: llama3.1:8b
+[2026-07-08 11:01:37] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 11:01:37] ============================================================
+[2026-07-08 11:01:45] ============================================================
+[2026-07-08 11:01:45] 🚀 Streamlit app initialized
+[2026-07-08 11:01:45] Model: llama3.1:8b
+[2026-07-08 11:01:45] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 11:01:45] ============================================================
+[2026-07-08 11:01:52] ============================================================
+[2026-07-08 11:01:52] 🚀 Streamlit app initialized
+[2026-07-08 11:01:52] Model: llama3.1:8b
+[2026-07-08 11:01:52] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 11:01:52] ============================================================
+[2026-07-08 11:01:52] 📝 User input received: Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 11:01:52] 🤖 Starting agent execution...
+[2026-07-08 11:01:52] ✓ Same topic: keeping context
+[2026-07-08 11:01:52] ✓ Query unchanged
+[2026-07-08 11:01:52] Running agent with 1 messages...
+[2026-07-08 11:01:52]   Message 0: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 11:01:52] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 11:01:52]   [Values] State has 1 messages
+[2026-07-08 11:01:52]   [Values] State has 1 messages
+[2026-07-08 11:02:04]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 11:02:04]   🛠️ ToolMessage from: search_products
+[2026-07-08 11:02:04] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 11:02:04]   ✅ AIMessage (full) - content len: 122
+[2026-07-08 11:02:04]        Added to response: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+. Có thể bạn muốn hỏi
+[2026-07-08 11:02:04]   [Values] State has 4 messages
+[2026-07-08 11:02:04] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 11:02:04] ✓ Agent response ready (122 chars)
+[2026-07-08 11:02:04]   Response preview: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+. Có thể bạn muốn hỏi về một sản phẩm khác?
+[2026-07-08 11:02:04] ✓ ProductMemory persisted for next turn
+[2026-07-08 11:02:04] ✅ Agent execution completed successfully
+[2026-07-08 11:02:04] 📊 Response length: 122 chars
+[2026-07-08 11:02:04] 🛠️ Tool calls: []
+[2026-07-08 11:02:04] 📈 Tool results: {'search_products': 0}
+[2026-07-08 11:02:04] 📨 Displaying agent response (122 chars)
+[2026-07-08 13:34:22] ============================================================
+[2026-07-08 13:34:22] 🚀 Streamlit app initialized
+[2026-07-08 13:34:22] Model: llama3.1:8b
+[2026-07-08 13:34:22] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 13:34:22] ============================================================
+[2026-07-08 14:23:49] ============================================================
+[2026-07-08 14:23:49] 🚀 Streamlit app initialized
+[2026-07-08 14:23:49] Model: llama3.1:8b
+[2026-07-08 14:23:49] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:23:49] ============================================================
+[2026-07-08 14:23:49] 📝 User input received: 
+Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 14:23:49] 🤖 Starting agent execution...
+[2026-07-08 14:23:49] ✓ Same topic: keeping context
+[2026-07-08 14:23:49] ✓ Query unchanged
+[2026-07-08 14:23:49] Running agent with 5 messages...
+[2026-07-08 14:23:49]   Message 0: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 14:23:49]   Message 1: AIMessage - 
+[2026-07-08 14:23:49]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'thiế
+[2026-07-08 14:23:49]   Message 3: AIMessage - Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+.
+[2026-07-08 14:23:49]   Message 4: HumanMessage - 
+Thiết Bị Lưu Trữ NAS Synology DS925+
+[2026-07-08 14:23:49] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 14:23:49]   [Values] State has 5 messages
+[2026-07-08 14:23:49]   [Values] State has 5 messages
+[2026-07-08 14:24:04]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 14:24:04]   🛠️ ToolMessage from: search_products
+[2026-07-08 14:24:04] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 14:24:04]   ✅ AIMessage (full) - content len: 220
+[2026-07-08 14:24:04]        Added to response: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+. Có thể bạn muốn hỏi
+[2026-07-08 14:24:04]   [Values] State has 8 messages
+[2026-07-08 14:24:04] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 14:24:04] ✓ Agent response ready (220 chars)
+[2026-07-08 14:24:04]   Response preview: Tôi xin lỗi, nhưng tôi không thể tìm thấy thông tin về thiết bị Synology DS925+. Có thể bạn muốn hỏi về một sản phẩm khác?
+
+Nếu bạn cần hỗ trợ thêm, v
+[2026-07-08 14:24:04] ✓ ProductMemory persisted for next turn
+[2026-07-08 14:24:04] ✅ Agent execution completed successfully
+[2026-07-08 14:24:04] 📊 Response length: 220 chars
+[2026-07-08 14:24:04] 🛠️ Tool calls: []
+[2026-07-08 14:24:04] 📈 Tool results: {'search_products': 0}
+[2026-07-08 14:24:04] 📨 Displaying agent response (220 chars)
+[2026-07-08 14:32:36] ============================================================
+[2026-07-08 14:32:36] 🚀 Streamlit app initialized
+[2026-07-08 14:32:36] Model: llama3.1:8b
+[2026-07-08 14:32:36] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:32:36] ============================================================
+[2026-07-08 14:32:52] ============================================================
+[2026-07-08 14:32:52] 🚀 Streamlit app initialized
+[2026-07-08 14:32:52] Model: llama3.1:8b
+[2026-07-08 14:32:52] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:32:52] ============================================================
+[2026-07-08 14:32:52] 📝 User input received:  Synology DS925
+[2026-07-08 14:32:52] 🤖 Starting agent execution...
+[2026-07-08 14:32:52] ✓ Same topic: keeping context
+[2026-07-08 14:32:52] ✓ Query unchanged
+[2026-07-08 14:32:52] Running agent with 1 messages...
+[2026-07-08 14:32:52]   Message 0: HumanMessage -  Synology DS925
+[2026-07-08 14:32:52] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 14:32:52]   [Values] State has 1 messages
+[2026-07-08 14:32:52]   [Values] State has 1 messages
+[2026-07-08 14:33:04]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 14:33:04]   🛠️ ToolMessage from: search_products
+[2026-07-08 14:33:04] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 14:33:04]   ✅ AIMessage (full) - content len: 124
+[2026-07-08 14:33:04]        Added to response: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản phẩm hoặc sử dụng t
+[2026-07-08 14:33:04]   [Values] State has 4 messages
+[2026-07-08 14:33:04] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 14:33:04] ✓ Agent response ready (124 chars)
+[2026-07-08 14:33:04]   Response preview: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản phẩm hoặc sử dụng từ khóa khác để tìm kiếm?
+[2026-07-08 14:33:04] ✓ ProductMemory persisted for next turn
+[2026-07-08 14:33:04] ✅ Agent execution completed successfully
+[2026-07-08 14:33:04] 📊 Response length: 124 chars
+[2026-07-08 14:33:04] 🛠️ Tool calls: []
+[2026-07-08 14:33:04] 📈 Tool results: {'search_products': 0}
+[2026-07-08 14:33:04] 📨 Displaying agent response (124 chars)
+[2026-07-08 14:33:13] ============================================================
+[2026-07-08 14:33:13] 🚀 Streamlit app initialized
+[2026-07-08 14:33:13] Model: llama3.1:8b
+[2026-07-08 14:33:13] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:33:13] ============================================================
+[2026-07-08 14:33:13] 📝 User input received: Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 14:33:13] 🤖 Starting agent execution...
+[2026-07-08 14:33:13] ✓ Same topic: keeping context
+[2026-07-08 14:33:13] ✓ Query unchanged
+[2026-07-08 14:33:13] Running agent with 5 messages...
+[2026-07-08 14:33:13]   Message 0: HumanMessage -  Synology DS925
+[2026-07-08 14:33:13]   Message 1: AIMessage - 
+[2026-07-08 14:33:13]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'NAS 
+[2026-07-08 14:33:13]   Message 3: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản
+[2026-07-08 14:33:13]   Message 4: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 14:33:13] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 14:33:13]   [Values] State has 5 messages
+[2026-07-08 14:33:13]   [Values] State has 5 messages
+[2026-07-08 14:33:21]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 14:33:21]   🛠️ ToolMessage from: search_products
+[2026-07-08 14:33:21] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 14:33:21]   ✅ AIMessage (full) - content len: 124
+[2026-07-08 14:33:21]        Added to response: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản phẩm hoặc sử dụng t
+[2026-07-08 14:33:21]   [Values] State has 8 messages
+[2026-07-08 14:33:21] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 14:33:21] ✓ Agent response ready (124 chars)
+[2026-07-08 14:33:21]   Response preview: Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản phẩm hoặc sử dụng từ khóa khác để tìm kiếm?
+[2026-07-08 14:33:21] ✓ ProductMemory persisted for next turn
+[2026-07-08 14:33:21] ✅ Agent execution completed successfully
+[2026-07-08 14:33:21] 📊 Response length: 124 chars
+[2026-07-08 14:33:21] 🛠️ Tool calls: []
+[2026-07-08 14:33:21] 📈 Tool results: {'search_products': 0}
+[2026-07-08 14:33:21] 📨 Displaying agent response (124 chars)
+[2026-07-08 14:34:02] ============================================================
+[2026-07-08 14:34:02] 🚀 Streamlit app initialized
+[2026-07-08 14:34:02] Model: llama3.1:8b
+[2026-07-08 14:34:02] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:34:02] ============================================================
+[2026-07-08 14:34:02] 📝 User input received: giá của card gtx
+[2026-07-08 14:34:02] 🤖 Starting agent execution...
+[2026-07-08 14:34:02] ✓ Same topic: keeping context
+[2026-07-08 14:34:02] ✓ Query unchanged
+[2026-07-08 14:34:02] Running agent with 9 messages...
+[2026-07-08 14:34:02]   Message 0: HumanMessage -  Synology DS925
+[2026-07-08 14:34:02]   Message 1: AIMessage - 
+[2026-07-08 14:34:02]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'NAS 
+[2026-07-08 14:34:02]   Message 3: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản
+[2026-07-08 14:34:02]   Message 4: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 14:34:02]   Message 5: AIMessage - 
+[2026-07-08 14:34:02]   Message 6: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'thiế
+[2026-07-08 14:34:02]   Message 7: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản
+[2026-07-08 14:34:02]   Message 8: HumanMessage - giá của card gtx
+[2026-07-08 14:34:02] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 14:34:02]   [Values] State has 9 messages
+[2026-07-08 14:34:02]   [Values] State has 9 messages
+[2026-07-08 14:34:11]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 14:34:11]   🛠️ ToolMessage from: search_products
+[2026-07-08 14:34:11] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 14:34:11]   ✅ AIMessage (full) - content len: 162
+[2026-07-08 14:34:11]        Added to response: Tôi không thể tìm thấy thông tin về giá của card GTX. Bạn có thể cung cấp thêm thông tin về loại car
+[2026-07-08 14:34:11]   [Values] State has 12 messages
+[2026-07-08 14:34:11] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 14:34:11] ✓ Agent response ready (162 chars)
+[2026-07-08 14:34:11]   Response preview: Tôi không thể tìm thấy thông tin về giá của card GTX. Bạn có thể cung cấp thêm thông tin về loại card GTX bạn đang tìm kiếm hoặc sử dụng từ khóa khác 
+[2026-07-08 14:34:11] ✓ ProductMemory persisted for next turn
+[2026-07-08 14:34:11] ✅ Agent execution completed successfully
+[2026-07-08 14:34:11] 📊 Response length: 162 chars
+[2026-07-08 14:34:11] 🛠️ Tool calls: []
+[2026-07-08 14:34:11] 📈 Tool results: {'search_products': 0}
+[2026-07-08 14:34:11] 📨 Displaying agent response (162 chars)
+[2026-07-08 14:35:09] ============================================================
+[2026-07-08 14:35:09] 🚀 Streamlit app initialized
+[2026-07-08 14:35:09] Model: llama3.1:8b
+[2026-07-08 14:35:09] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:35:09] ============================================================
+[2026-07-08 14:35:09] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 14:35:09] 🤖 Starting agent execution...
+[2026-07-08 14:35:09] ✓ Same topic: keeping context
+[2026-07-08 14:35:09] ✓ Query unchanged
+[2026-07-08 14:35:09] Running agent with 13 messages...
+[2026-07-08 14:35:09]   Message 0: HumanMessage -  Synology DS925
+[2026-07-08 14:35:09]   Message 1: AIMessage - 
+[2026-07-08 14:35:09]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'NAS 
+[2026-07-08 14:35:09]   Message 3: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản
+[2026-07-08 14:35:09]   Message 4: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 14:35:09]   Message 5: AIMessage - 
+[2026-07-08 14:35:09]   Message 6: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'thiế
+[2026-07-08 14:35:09]   Message 7: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản
+[2026-07-08 14:35:09]   Message 8: HumanMessage - giá của card gtx
+[2026-07-08 14:35:09]   Message 9: AIMessage - 
+[2026-07-08 14:35:09]   Message 10: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'null
+[2026-07-08 14:35:09]   Message 11: AIMessage - Tôi không thể tìm thấy thông tin về giá của card GTX. Bạn có thể cung cấp thêm t
+[2026-07-08 14:35:09]   Message 12: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 14:35:09] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 14:35:09]   [Values] State has 13 messages
+[2026-07-08 14:35:09]   [Values] State has 13 messages
+[2026-07-08 14:35:18]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 14:35:18]   🛠️ ToolMessage from: search_products
+[2026-07-08 14:35:18] 📊 TOOL_RESULT: search_products → 1 products
+[2026-07-08 14:35:18] ✓ Product detected: Card màn hình ASUS GT1030-SL-2G-BRK...
+[2026-07-08 14:35:18]   ✅ AIMessage (full) - content len: 57
+[2026-07-08 14:35:18]        Added to response: Card màn hình ASUS GT1030-SL-2G-BRK có giá 1,950,000 VND.
+[2026-07-08 14:35:18]   [Values] State has 16 messages
+[2026-07-08 14:35:18] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 14:35:18] ✓ Agent response ready (57 chars)
+[2026-07-08 14:35:18]   Response preview: Card màn hình ASUS GT1030-SL-2G-BRK có giá 1,950,000 VND.
+[2026-07-08 14:35:18] ✓ ProductMemory persisted for next turn
+[2026-07-08 14:35:18] ✅ Agent execution completed successfully
+[2026-07-08 14:35:18] 📊 Response length: 57 chars
+[2026-07-08 14:35:18] 🛠️ Tool calls: []
+[2026-07-08 14:35:18] 📈 Tool results: {'search_products': 1}
+[2026-07-08 14:35:18] 📨 Displaying agent response (57 chars)
+[2026-07-08 14:35:36] ============================================================
+[2026-07-08 14:35:36] 🚀 Streamlit app initialized
+[2026-07-08 14:35:36] Model: llama3.1:8b
+[2026-07-08 14:35:36] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:35:36] ============================================================
+[2026-07-08 14:35:36] 📝 User input received: còn sản phẩm nào khác ko 
+[2026-07-08 14:35:36] 🤖 Starting agent execution...
+[2026-07-08 14:35:36] ✓ Same topic: keeping context
+[2026-07-08 14:35:36] ✓ Query enriched: 'Card màn hình ASUS GT1030-SL-2G-BRK còn sản phẩm nào khác ko '
+[2026-07-08 14:35:36] ✓ Added query enrichment context
+[2026-07-08 14:35:36] Running agent with 18 messages...
+[2026-07-08 14:35:36]   Message 0: HumanMessage -  Synology DS925
+[2026-07-08 14:35:36]   Message 1: AIMessage - 
+[2026-07-08 14:35:36]   Message 2: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'NAS 
+[2026-07-08 14:35:36]   Message 3: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản
+[2026-07-08 14:35:36]   Message 4: HumanMessage - Thiết Bị Lưu Trữ NAS Synology DS925+
+
+[2026-07-08 14:35:36]   Message 5: AIMessage - 
+[2026-07-08 14:35:36]   Message 6: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'thiế
+[2026-07-08 14:35:36]   Message 7: AIMessage - Không tìm thấy trong dữ liệu hiện tại. Bạn có thể cung cấp thêm thông tin về sản
+[2026-07-08 14:35:36]   Message 8: HumanMessage - giá của card gtx
+[2026-07-08 14:35:36]   Message 9: AIMessage - 
+[2026-07-08 14:35:36]   Message 10: ToolMessage - {"status": "no_products", "message": "Không tìm thấy sản phẩm phù hợp với: 'null
+[2026-07-08 14:35:36]   Message 11: AIMessage - Tôi không thể tìm thấy thông tin về giá của card GTX. Bạn có thể cung cấp thêm t
+[2026-07-08 14:35:36]   Message 12: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 14:35:36]   Message 13: AIMessage - 
+[2026-07-08 14:35:36]   Message 14: ToolMessage - {
+  "status": "success",
+  "count": 1,
+  "query": "1-2 triệu cac card màn hình t
+[2026-07-08 14:35:36]   Message 15: AIMessage - Card màn hình ASUS GT1030-SL-2G-BRK có giá 1,950,000 VND.
+[2026-07-08 14:35:36]   Message 16: SystemMessage - [Ngữ cảnh: Card màn hình ASUS GT1030-SL-2G-BRK còn sản phẩm nào khác ko ]
+
+Dựa t
+[2026-07-08 14:35:36]   Message 17: HumanMessage - còn sản phẩm nào khác ko 
+[2026-07-08 14:35:36] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 14:35:36]   [Values] State has 18 messages
+[2026-07-08 14:35:36]   [Values] State has 18 messages
+[2026-07-08 14:35:47]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 14:35:47]   🛠️ ToolMessage from: search_products
+[2026-07-08 14:35:47] 📊 TOOL_RESULT: search_products → 5 products
+[2026-07-08 14:35:47] ✓ Product detected: Card màn hình ASUS GT710-SL-2GD3-BRK-EVO...
+[2026-07-08 14:35:47]   ✅ AIMessage (full) - content len: 265
+[2026-07-08 14:35:47]        Added to response: Có các sản phẩm khác như:
+
+* Card màn hình ASUS GT710-SL-2GD3-BRK-EVO giá 810,000 VND
+* Card màn hìn
+[2026-07-08 14:35:47]   [Values] State has 21 messages
+[2026-07-08 14:35:47] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 14:35:47] ✓ Agent response ready (265 chars)
+[2026-07-08 14:35:47]   Response preview: Có các sản phẩm khác như:
+
+* Card màn hình ASUS GT710-SL-2GD3-BRK-EVO giá 810,000 VND
+* Card màn hình ASUS PH-GT1030-O2G giá 1,830,000 VND
+* Card màn 
+[2026-07-08 14:35:47] ✓ ProductMemory persisted for next turn
+[2026-07-08 14:35:47] ✅ Agent execution completed successfully
+[2026-07-08 14:35:47] 📊 Response length: 265 chars
+[2026-07-08 14:35:47] 🛠️ Tool calls: []
+[2026-07-08 14:35:47] 📈 Tool results: {'search_products': 5}
+[2026-07-08 14:35:47] 📨 Displaying agent response (265 chars)
+[2026-07-08 14:53:37] ============================================================
+[2026-07-08 14:53:37] 🚀 Streamlit app initialized
+[2026-07-08 14:53:37] Model: llama3.1:8b
+[2026-07-08 14:53:37] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:53:37] ============================================================
+[2026-07-08 14:54:15] ============================================================
+[2026-07-08 14:54:15] 🚀 Streamlit app initialized
+[2026-07-08 14:54:15] Model: llama3.1:8b
+[2026-07-08 14:54:15] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 14:54:15] ============================================================
+[2026-07-08 14:54:15] 📝 User input received: giá của card gtx
+[2026-07-08 14:54:15] 🤖 Starting agent execution...
+[2026-07-08 14:54:15] ✓ Same topic: keeping context
+[2026-07-08 14:54:15] ✓ Query unchanged
+[2026-07-08 14:54:15] Running agent with 1 messages...
+[2026-07-08 14:54:15]   Message 0: HumanMessage - giá của card gtx
+[2026-07-08 14:54:15] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 14:54:15]   [Values] State has 1 messages
+[2026-07-08 14:54:15]   [Values] State has 1 messages
+[2026-07-08 14:54:27]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 14:54:27]   🛠️ ToolMessage from: search_products
+[2026-07-08 14:54:27] 📊 TOOL_RESULT: search_products → 3 products
+[2026-07-08 14:54:27] ✓ Product detected: Card đồ họa NVIDIA GEFORCE RTX 3080...
+[2026-07-08 14:54:27]   ✅ AIMessage (full) - content len: 116
+[2026-07-08 14:54:27]        Added to response: "Card đồ họa NVIDIA GEFORCE RTX 3080 có giá Liên hệ báo giá. Card màn hình ASUS PH-GT1030-O2G có giá
+[2026-07-08 14:54:27]   [Values] State has 4 messages
+[2026-07-08 14:54:27] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 14:54:27] ✓ Agent response ready (116 chars)
+[2026-07-08 14:54:27]   Response preview: "Card đồ họa NVIDIA GEFORCE RTX 3080 có giá Liên hệ báo giá. Card màn hình ASUS PH-GT1030-O2G có giá 1,830,000 VND."
+[2026-07-08 14:54:27] ✓ ProductMemory persisted for next turn
+[2026-07-08 14:54:27] ✅ Agent execution completed successfully
+[2026-07-08 14:54:27] 📊 Response length: 116 chars
+[2026-07-08 14:54:27] 🛠️ Tool calls: []
+[2026-07-08 14:54:27] 📈 Tool results: {'search_products': 3}
+[2026-07-08 14:54:27] 📨 Displaying agent response (116 chars)
+[2026-07-08 15:02:19] ============================================================
+[2026-07-08 15:02:19] 🚀 Streamlit app initialized
+[2026-07-08 15:02:19] Model: llama3.1:8b
+[2026-07-08 15:02:19] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:02:19] ============================================================
+[2026-07-08 15:02:21] ============================================================
+[2026-07-08 15:02:21] 🚀 Streamlit app initialized
+[2026-07-08 15:02:21] Model: llama3.1:8b
+[2026-07-08 15:02:21] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:02:21] ============================================================
+[2026-07-08 15:02:21] 📝 User input received: giá của card gtx
+[2026-07-08 15:02:21] 🤖 Starting agent execution...
+[2026-07-08 15:02:21] ✓ Same topic: keeping context
+[2026-07-08 15:02:21] ✓ Query unchanged
+[2026-07-08 15:02:21] Running agent with 1 messages...
+[2026-07-08 15:02:21]   Message 0: HumanMessage - giá của card gtx
+[2026-07-08 15:02:21] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:02:21]   [Values] State has 1 messages
+[2026-07-08 15:02:21]   [Values] State has 1 messages
+[2026-07-08 15:02:33]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:02:33]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:02:33] 📊 TOOL_RESULT: search_products → 2 products
+[2026-07-08 15:02:33] ✓ Product detected: Card màn hình ASUS PH-GT1030-O2G...
+[2026-07-08 15:02:33]   ✅ AIMessage (full) - content len: 126
+[2026-07-08 15:02:33]        Added to response: "Card màn hình ASUS PH-GT1030-O2G có giá 1,830,000 VND và Card đồ họa LEADTEK NVIDIA RTX 4000 ADA 20
+[2026-07-08 15:02:33]   [Values] State has 4 messages
+[2026-07-08 15:02:33] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:02:33] ✓ Agent response ready (126 chars)
+[2026-07-08 15:02:33]   Response preview: "Card màn hình ASUS PH-GT1030-O2G có giá 1,830,000 VND và Card đồ họa LEADTEK NVIDIA RTX 4000 ADA 20GB có giá 38,450,000 VND."
+[2026-07-08 15:02:33] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:02:33] ✅ Agent execution completed successfully
+[2026-07-08 15:02:33] 📊 Response length: 126 chars
+[2026-07-08 15:02:33] 🛠️ Tool calls: []
+[2026-07-08 15:02:33] 📈 Tool results: {'search_products': 2}
+[2026-07-08 15:02:33] 📨 Displaying agent response (126 chars)
+[2026-07-08 15:03:36] ============================================================
+[2026-07-08 15:03:36] 🚀 Streamlit app initialized
+[2026-07-08 15:03:36] Model: llama3.1:8b
+[2026-07-08 15:03:36] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:03:36] ============================================================
+[2026-07-08 15:03:36] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:03:36] 🤖 Starting agent execution...
+[2026-07-08 15:03:36] ✓ Same topic: keeping context
+[2026-07-08 15:03:36] ✓ Query enriched: 'Card màn hình ASUS PH-GT1030-O2G cac card màn hình tầ, giá 1 triệu đên 2 triệu'
+[2026-07-08 15:03:36] ✓ Added query enrichment context
+[2026-07-08 15:03:36] Running agent with 6 messages...
+[2026-07-08 15:03:36]   Message 0: HumanMessage - giá của card gtx
+[2026-07-08 15:03:36]   Message 1: AIMessage - 
+[2026-07-08 15:03:36]   Message 2: ToolMessage - {
+  "status": "success",
+  "count": 2,
+  "query": "card đồ họa giá của card gtx"
+[2026-07-08 15:03:36]   Message 3: AIMessage - "Card màn hình ASUS PH-GT1030-O2G có giá 1,830,000 VND và Card đồ họa LEADTEK NV
+[2026-07-08 15:03:36]   Message 4: SystemMessage - [Ngữ cảnh: Card màn hình ASUS PH-GT1030-O2G cac card màn hình tầ, giá 1 triệu đê
+[2026-07-08 15:03:36]   Message 5: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:03:36] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:03:36]   [Values] State has 6 messages
+[2026-07-08 15:03:36]   [Values] State has 6 messages
+[2026-07-08 15:03:47]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:03:47]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:03:47] 📊 TOOL_RESULT: search_products → 5 products
+[2026-07-08 15:03:47] ✓ Product detected: Card màn hình ASUS GT1030-SL-2G-BRK...
+[2026-07-08 15:03:47]   ✅ AIMessage (full) - content len: 423
+[2026-07-08 15:03:47]        Added to response: "Các card màn hình trong khoảng giá 1 triệu đến 2 triệu bao gồm:
+
+* Card màn hình ASUS GT1030-SL-2G-
+[2026-07-08 15:03:47]   [Values] State has 9 messages
+[2026-07-08 15:03:47] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:03:47] ✓ Agent response ready (423 chars)
+[2026-07-08 15:03:47]   Response preview: "Các card màn hình trong khoảng giá 1 triệu đến 2 triệu bao gồm:
+
+* Card màn hình ASUS GT1030-SL-2G-BRK có giá 1,950,000 VND.
+* Card màn hình ASUS DUA
+[2026-07-08 15:03:47] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:03:47] ✅ Agent execution completed successfully
+[2026-07-08 15:03:47] 📊 Response length: 423 chars
+[2026-07-08 15:03:47] 🛠️ Tool calls: []
+[2026-07-08 15:03:47] 📈 Tool results: {'search_products': 5}
+[2026-07-08 15:03:47] 📨 Displaying agent response (423 chars)
+[2026-07-08 15:09:19] ============================================================
+[2026-07-08 15:09:19] 🚀 Streamlit app initialized
+[2026-07-08 15:09:19] Model: llama3.1:8b
+[2026-07-08 15:09:19] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:09:19] ============================================================
+[2026-07-08 15:09:23] ============================================================
+[2026-07-08 15:09:23] 🚀 Streamlit app initialized
+[2026-07-08 15:09:23] Model: llama3.1:8b
+[2026-07-08 15:09:23] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:09:23] ============================================================
+[2026-07-08 15:09:23] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:09:23] 🤖 Starting agent execution...
+[2026-07-08 15:09:23] ✓ Same topic: keeping context
+[2026-07-08 15:09:23] ✓ Query unchanged
+[2026-07-08 15:09:23] Running agent with 1 messages...
+[2026-07-08 15:09:23]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:09:23] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:09:23]   [Values] State has 1 messages
+[2026-07-08 15:09:23]   [Values] State has 1 messages
+[2026-07-08 15:09:36]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:09:36]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:09:36] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 15:09:36]   ✅ AIMessage (full) - content len: 272
+[2026-07-08 15:09:36]        Added to response: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu cac card màn hình tầ, giá 1 triệu đên 
+[2026-07-08 15:09:36]   [Values] State has 4 messages
+[2026-07-08 15:09:36] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:09:36] ✓ Agent response ready (272 chars)
+[2026-07-08 15:09:36]   Response preview: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu cac card màn hình tầ, giá 1 triệu đên 2 triệu'. Bạn có thể cung cấp thêm thông tin về lo
+[2026-07-08 15:09:36] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:09:36] ✅ Agent execution completed successfully
+[2026-07-08 15:09:36] 📊 Response length: 272 chars
+[2026-07-08 15:09:36] 🛠️ Tool calls: []
+[2026-07-08 15:09:36] 📈 Tool results: {'search_products': 0}
+[2026-07-08 15:09:36] 📨 Displaying agent response (272 chars)
+[2026-07-08 15:10:00] ============================================================
+[2026-07-08 15:10:00] 🚀 Streamlit app initialized
+[2026-07-08 15:10:00] Model: llama3.1:8b
+[2026-07-08 15:10:00] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:10:00] ============================================================
+[2026-07-08 15:10:05] ============================================================
+[2026-07-08 15:10:05] 🚀 Streamlit app initialized
+[2026-07-08 15:10:05] Model: llama3.1:8b
+[2026-07-08 15:10:05] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:10:05] ============================================================
+[2026-07-08 15:10:05] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:10:05] 🤖 Starting agent execution...
+[2026-07-08 15:10:05] ✓ Same topic: keeping context
+[2026-07-08 15:10:05] ✓ Query unchanged
+[2026-07-08 15:10:05] Running agent with 1 messages...
+[2026-07-08 15:10:05]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:10:05] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:10:05]   [Values] State has 1 messages
+[2026-07-08 15:10:05]   [Values] State has 1 messages
+[2026-07-08 15:10:16]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:10:16]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:10:16] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 15:10:16]   ✅ AIMessage (full) - content len: 272
+[2026-07-08 15:10:16]        Added to response: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu cac card màn hình tầ, giá 1 triệu đên 
+[2026-07-08 15:10:16]   [Values] State has 4 messages
+[2026-07-08 15:10:16] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:10:16] ✓ Agent response ready (272 chars)
+[2026-07-08 15:10:16]   Response preview: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu cac card màn hình tầ, giá 1 triệu đên 2 triệu'. Bạn có thể cung cấp thêm thông tin về lo
+[2026-07-08 15:10:16] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:10:16] ✅ Agent execution completed successfully
+[2026-07-08 15:10:16] 📊 Response length: 272 chars
+[2026-07-08 15:10:16] 🛠️ Tool calls: []
+[2026-07-08 15:10:16] 📈 Tool results: {'search_products': 0}
+[2026-07-08 15:10:16] 📨 Displaying agent response (272 chars)
+[2026-07-08 15:15:36] ============================================================
+[2026-07-08 15:15:36] 🚀 Streamlit app initialized
+[2026-07-08 15:15:36] Model: llama3.1:8b
+[2026-07-08 15:15:36] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:15:36] ============================================================
+[2026-07-08 15:15:39] ============================================================
+[2026-07-08 15:15:39] 🚀 Streamlit app initialized
+[2026-07-08 15:15:39] Model: llama3.1:8b
+[2026-07-08 15:15:39] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:15:39] ============================================================
+[2026-07-08 15:15:39] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:15:39] 🤖 Starting agent execution...
+[2026-07-08 15:15:39] ✓ Same topic: keeping context
+[2026-07-08 15:15:39] ✓ Query unchanged
+[2026-07-08 15:15:39] Running agent with 1 messages...
+[2026-07-08 15:15:39]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:15:39] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:15:39]   [Values] State has 1 messages
+[2026-07-08 15:15:39]   [Values] State has 1 messages
+[2026-07-08 15:15:49]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:15:49]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:15:49] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 15:15:49]   ✅ AIMessage (full) - content len: 253
+[2026-07-08 15:15:49]        Added to response: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu tìm kiếm các thẻ màn hình có giá từ 1 
+[2026-07-08 15:15:49]   [Values] State has 4 messages
+[2026-07-08 15:15:49] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:15:49] ✓ Agent response ready (253 chars)
+[2026-07-08 15:15:49]   Response preview: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu tìm kiếm các thẻ màn hình có giá từ 1 triệu đến 2 triệu'. Bạn có thể cung cấp thêm thông
+[2026-07-08 15:15:49] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:15:49] ✅ Agent execution completed successfully
+[2026-07-08 15:15:49] 📊 Response length: 253 chars
+[2026-07-08 15:15:49] 🛠️ Tool calls: []
+[2026-07-08 15:15:49] 📈 Tool results: {'search_products': 0}
+[2026-07-08 15:15:49] 📨 Displaying agent response (253 chars)
+[2026-07-08 15:26:32] ============================================================
+[2026-07-08 15:26:32] 🚀 Streamlit app initialized
+[2026-07-08 15:26:32] Model: llama3.1:8b
+[2026-07-08 15:26:32] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:26:32] ============================================================
+[2026-07-08 15:26:33] ============================================================
+[2026-07-08 15:26:33] 🚀 Streamlit app initialized
+[2026-07-08 15:26:33] Model: llama3.1:8b
+[2026-07-08 15:26:33] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:26:33] ============================================================
+[2026-07-08 15:26:33] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:26:33] 🤖 Starting agent execution...
+[2026-07-08 15:26:33] ✓ Same topic: keeping context
+[2026-07-08 15:26:33] ✓ Query unchanged
+[2026-07-08 15:26:33] Running agent with 1 messages...
+[2026-07-08 15:26:33]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:26:33] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:26:33]   [Values] State has 1 messages
+[2026-07-08 15:26:33]   [Values] State has 1 messages
+[2026-07-08 15:26:46]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:26:46]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:26:46] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 15:26:46]   ✅ AIMessage (full) - content len: 143
+[2026-07-08 15:26:46]        Added to response: Không tìm thấy sản phẩm phù hợp với yêu cầu của bạn. Bạn có muốn cung cấp thêm thông tin về loại car
+[2026-07-08 15:26:46]   [Values] State has 4 messages
+[2026-07-08 15:26:46] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:26:46] ✓ Agent response ready (143 chars)
+[2026-07-08 15:26:46]   Response preview: Không tìm thấy sản phẩm phù hợp với yêu cầu của bạn. Bạn có muốn cung cấp thêm thông tin về loại card màn hình hoặc hãng mà bạn quan tâm không?
+[2026-07-08 15:26:46] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:26:46] ✅ Agent execution completed successfully
+[2026-07-08 15:26:46] 📊 Response length: 143 chars
+[2026-07-08 15:26:46] 🛠️ Tool calls: []
+[2026-07-08 15:26:46] 📈 Tool results: {'search_products': 0}
+[2026-07-08 15:26:46] 📨 Displaying agent response (143 chars)
+[2026-07-08 15:28:14] ============================================================
+[2026-07-08 15:28:14] 🚀 Streamlit app initialized
+[2026-07-08 15:28:14] Model: llama3.1:8b
+[2026-07-08 15:28:14] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:28:14] ============================================================
+[2026-07-08 15:28:18] ============================================================
+[2026-07-08 15:28:18] 🚀 Streamlit app initialized
+[2026-07-08 15:28:18] Model: llama3.1:8b
+[2026-07-08 15:28:18] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:28:18] ============================================================
+[2026-07-08 15:28:18] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:28:18] 🤖 Starting agent execution...
+[2026-07-08 15:28:18] ✓ Same topic: keeping context
+[2026-07-08 15:28:18] ✓ Query unchanged
+[2026-07-08 15:28:18] Running agent with 1 messages...
+[2026-07-08 15:28:18]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:28:18] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:28:18]   [Values] State has 1 messages
+[2026-07-08 15:28:18]   [Values] State has 1 messages
+[2026-07-08 15:28:28]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:28:28]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:28:28] 📊 TOOL_RESULT: search_products → 1 products
+[2026-07-08 15:28:28] ✓ Product detected: Card màn hình ASUS GT1030-SL-2G-BRK...
+[2026-07-08 15:28:28]   ✅ AIMessage (full) - content len: 53
+[2026-07-08 15:28:28]        Added to response: "Máy chủ Dell PowerEdge R740 có giá 45.000.000 đồng."
+[2026-07-08 15:28:28]   [Values] State has 4 messages
+[2026-07-08 15:28:28] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:28:28] ✓ Agent response ready (53 chars)
+[2026-07-08 15:28:28]   Response preview: "Máy chủ Dell PowerEdge R740 có giá 45.000.000 đồng."
+[2026-07-08 15:28:28] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:28:28] ✅ Agent execution completed successfully
+[2026-07-08 15:28:28] 📊 Response length: 53 chars
+[2026-07-08 15:28:28] 🛠️ Tool calls: []
+[2026-07-08 15:28:28] 📈 Tool results: {'search_products': 1}
+[2026-07-08 15:28:28] 📨 Displaying agent response (53 chars)
+[2026-07-08 15:32:03] ============================================================
+[2026-07-08 15:32:03] 🚀 Streamlit app initialized
+[2026-07-08 15:32:03] Model: llama3.1:8b
+[2026-07-08 15:32:03] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:32:03] ============================================================
+[2026-07-08 15:32:05] ============================================================
+[2026-07-08 15:32:05] 🚀 Streamlit app initialized
+[2026-07-08 15:32:05] Model: llama3.1:8b
+[2026-07-08 15:32:05] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:32:05] ============================================================
+[2026-07-08 15:32:05] 📝 User input received: 
+cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:32:05] 🤖 Starting agent execution...
+[2026-07-08 15:32:05] ✓ Same topic: keeping context
+[2026-07-08 15:32:05] ✓ Query unchanged
+[2026-07-08 15:32:05] Running agent with 1 messages...
+[2026-07-08 15:32:05]   Message 0: HumanMessage - 
+cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:32:05] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:32:05]   [Values] State has 1 messages
+[2026-07-08 15:32:05]   [Values] State has 1 messages
+[2026-07-08 15:32:15]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:32:15]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:32:15] 📊 TOOL_RESULT: search_products → 1 products
+[2026-07-08 15:32:15] ✓ Product detected: Card màn hình ASUS GT1030-SL-2G-BRK...
+[2026-07-08 15:32:15]   ✅ AIMessage (full) - content len: 60
+[2026-07-08 15:32:15]        Added to response: "Card màn hình ASUS GT1030-SL-2G-BRK có giá 1,950,000 đồng."
+[2026-07-08 15:32:15]   [Values] State has 4 messages
+[2026-07-08 15:32:15] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:32:15] ✓ Agent response ready (60 chars)
+[2026-07-08 15:32:15]   Response preview: "Card màn hình ASUS GT1030-SL-2G-BRK có giá 1,950,000 đồng."
+[2026-07-08 15:32:15] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:32:15] ✅ Agent execution completed successfully
+[2026-07-08 15:32:15] 📊 Response length: 60 chars
+[2026-07-08 15:32:15] 🛠️ Tool calls: []
+[2026-07-08 15:32:15] 📈 Tool results: {'search_products': 1}
+[2026-07-08 15:32:15] 📨 Displaying agent response (60 chars)
+[2026-07-08 15:32:42] ============================================================
+[2026-07-08 15:32:42] 🚀 Streamlit app initialized
+[2026-07-08 15:32:42] Model: llama3.1:8b
+[2026-07-08 15:32:42] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:32:42] ============================================================
+[2026-07-08 15:32:42] 📝 User input received: còn sản phẩm nào khác ko
+[2026-07-08 15:32:42] 🤖 Starting agent execution...
+[2026-07-08 15:32:42] ✓ Same topic: keeping context
+[2026-07-08 15:32:42] ✓ Query enriched: 'Card màn hình ASUS GT1030-SL-2G-BRK còn sản phẩm nào khác ko'
+[2026-07-08 15:32:42] ✓ Added query enrichment context
+[2026-07-08 15:32:42] Running agent with 6 messages...
+[2026-07-08 15:32:42]   Message 0: HumanMessage - 
+cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:32:42]   Message 1: AIMessage - 
+[2026-07-08 15:32:42]   Message 2: ToolMessage - {
+  "status": "success",
+  "count": 1,
+  "query": "card màn hình 1-2 triệu tìm k
+[2026-07-08 15:32:42]   Message 3: AIMessage - "Card màn hình ASUS GT1030-SL-2G-BRK có giá 1,950,000 đồng."
+[2026-07-08 15:32:42]   Message 4: SystemMessage - [Ngữ cảnh: Card màn hình ASUS GT1030-SL-2G-BRK còn sản phẩm nào khác ko]
+
+Dựa tr
+[2026-07-08 15:32:42]   Message 5: HumanMessage - còn sản phẩm nào khác ko
+[2026-07-08 15:32:42] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:32:42]   [Values] State has 6 messages
+[2026-07-08 15:32:42]   [Values] State has 6 messages
+[2026-07-08 15:32:56]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:32:56]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:32:56] 📊 TOOL_RESULT: search_products → 10 products
+[2026-07-08 15:32:56] ✓ Product detected: Card màn hình ASUS GT1030-SL-2G-BRK...
+[2026-07-08 15:32:56]   ✅ AIMessage (full) - content len: 632
+[2026-07-08 15:32:56]        Added to response: "Có các sản phẩm khác như:
+
+* Card màn hình ASUS DUAL-GTX1650-4GD6-P-EVO giá 3,170,000 đồng.
+* Card 
+[2026-07-08 15:32:56]   [Values] State has 9 messages
+[2026-07-08 15:32:56] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:32:56] ✓ Agent response ready (632 chars)
+[2026-07-08 15:32:56]   Response preview: "Có các sản phẩm khác như:
+
+* Card màn hình ASUS DUAL-GTX1650-4GD6-P-EVO giá 3,170,000 đồng.
+* Card màn hình ASUS DUAL-GTX1650-O4GD6-P-EVO giá 3,210,0
+[2026-07-08 15:32:56] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:32:56] ✅ Agent execution completed successfully
+[2026-07-08 15:32:56] 📊 Response length: 632 chars
+[2026-07-08 15:32:56] 🛠️ Tool calls: []
+[2026-07-08 15:32:56] 📈 Tool results: {'search_products': 10}
+[2026-07-08 15:32:56] 📨 Displaying agent response (632 chars)
+[2026-07-08 15:43:09] ============================================================
+[2026-07-08 15:43:09] 🚀 Streamlit app initialized
+[2026-07-08 15:43:09] Model: llama3.1:8b
+[2026-07-08 15:43:09] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:43:09] ============================================================
+[2026-07-08 15:43:14] ============================================================
+[2026-07-08 15:43:14] 🚀 Streamlit app initialized
+[2026-07-08 15:43:14] Model: llama3.1:8b
+[2026-07-08 15:43:14] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:43:14] ============================================================
+[2026-07-08 15:43:14] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:43:14] 🤖 Starting agent execution...
+[2026-07-08 15:43:14] ✓ Same topic: keeping context
+[2026-07-08 15:43:14] ✓ Query unchanged
+[2026-07-08 15:43:14] Running agent with 1 messages...
+[2026-07-08 15:43:14]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:43:14] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:43:14]   [Values] State has 1 messages
+[2026-07-08 15:43:14]   [Values] State has 1 messages
+[2026-07-08 15:43:27]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:43:27]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:43:27] 📊 TOOL_RESULT: search_products → 2 products
+[2026-07-08 15:43:27] ✓ Product detected: Màn Hình LCD Dell 19...
+[2026-07-08 15:43:27]   ✅ AIMessage (full) - content len: 214
+[2026-07-08 15:43:27]        Added to response: Có hai sản phẩm phù hợp với yêu cầu của bạn:
+
+1. Màn Hình LCD Dell 19 có giá 1,640,000 VND.
+2. Màn H
+[2026-07-08 15:43:27]   [Values] State has 4 messages
+[2026-07-08 15:43:27] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:43:27] ✓ Agent response ready (214 chars)
+[2026-07-08 15:43:27]   Response preview: Có hai sản phẩm phù hợp với yêu cầu của bạn:
+
+1. Màn Hình LCD Dell 19 có giá 1,640,000 VND.
+2. Màn Hình LCD HP 18 có giá 1,420,000 VND.
+
+Hãy cho tôi b
+[2026-07-08 15:43:27] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:43:27] ✅ Agent execution completed successfully
+[2026-07-08 15:43:27] 📊 Response length: 214 chars
+[2026-07-08 15:43:27] 🛠️ Tool calls: []
+[2026-07-08 15:43:27] 📈 Tool results: {'search_products': 2}
+[2026-07-08 15:43:27] 📨 Displaying agent response (214 chars)
+[2026-07-08 15:47:31] ============================================================
+[2026-07-08 15:47:31] 🚀 Streamlit app initialized
+[2026-07-08 15:47:31] Model: llama3.1:8b
+[2026-07-08 15:47:31] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:47:31] ============================================================
+[2026-07-08 15:47:33] ============================================================
+[2026-07-08 15:47:33] 🚀 Streamlit app initialized
+[2026-07-08 15:47:33] Model: llama3.1:8b
+[2026-07-08 15:47:33] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:47:33] ============================================================
+[2026-07-08 15:47:33] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:47:33] 🤖 Starting agent execution...
+[2026-07-08 15:47:33] ✓ Same topic: keeping context
+[2026-07-08 15:47:33] ✓ Query unchanged
+[2026-07-08 15:47:33] Running agent with 1 messages...
+[2026-07-08 15:47:33]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:47:33] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:47:33]   [Values] State has 1 messages
+[2026-07-08 15:47:33]   [Values] State has 1 messages
+[2026-07-08 15:47:43]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:47:43]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:47:43] 📊 TOOL_RESULT: search_products → 0 products
+[2026-07-08 15:47:43]   ✅ AIMessage (full) - content len: 272
+[2026-07-08 15:47:43]        Added to response: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu tìm kiếm các Card màn hình có giá từ 1
+[2026-07-08 15:47:43]   [Values] State has 4 messages
+[2026-07-08 15:47:43] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:47:43] ✓ Agent response ready (272 chars)
+[2026-07-08 15:47:43]   Response preview: Không tìm thấy sản phẩm phù hợp với: 'card man hinh 1-2 triệu tìm kiếm các Card màn hình có giá từ 1 triệu đến 2 triệu card đồ họa card do hoa vga gpu
+[2026-07-08 15:47:43] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:47:43] ✅ Agent execution completed successfully
+[2026-07-08 15:47:43] 📊 Response length: 272 chars
+[2026-07-08 15:47:43] 🛠️ Tool calls: []
+[2026-07-08 15:47:43] 📈 Tool results: {'search_products': 0}
+[2026-07-08 15:47:43] 📨 Displaying agent response (272 chars)
+[2026-07-08 15:50:23] ============================================================
+[2026-07-08 15:50:23] 🚀 Streamlit app initialized
+[2026-07-08 15:50:24] Model: llama3.1:8b
+[2026-07-08 15:50:24] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:50:24] ============================================================
+[2026-07-08 15:50:40] ============================================================
+[2026-07-08 15:50:40] 🚀 Streamlit app initialized
+[2026-07-08 15:50:40] Model: llama3.1:8b
+[2026-07-08 15:50:40] LLM Endpoint: http://localhost:11434/v1
+[2026-07-08 15:50:40] ============================================================
+[2026-07-08 15:50:40] 📝 User input received: cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:50:40] 🤖 Starting agent execution...
+[2026-07-08 15:50:40] ✓ Same topic: keeping context
+[2026-07-08 15:50:40] ✓ Query unchanged
+[2026-07-08 15:50:40] Running agent with 1 messages...
+[2026-07-08 15:50:40]   Message 0: HumanMessage - cac card màn hình tầ, giá 1 triệu đên 2 triệu
+[2026-07-08 15:50:40] 🔄 Streaming from orchestrator_agent...
+[2026-07-08 15:50:40]   [Values] State has 1 messages
+[2026-07-08 15:50:40]   [Values] State has 1 messages
+[2026-07-08 15:50:54]   ✅ AIMessage (full) - content len: 0
+[2026-07-08 15:50:54]   🛠️ ToolMessage from: search_products
+[2026-07-08 15:50:54] 📊 TOOL_RESULT: search_products → 3 products
+[2026-07-08 15:50:54] ✓ Product detected: Card màn hình ASUS GT1030-SL-2G-BRK...
+[2026-07-08 15:50:54]   ✅ AIMessage (full) - content len: 750
+[2026-07-08 15:50:54]        Added to response: Các card màn hình có giá từ 1 triệu đến 2 triệu là:
+
+* Card màn hình ASUS GT1030-SL-2G-BRK của hãng 
+[2026-07-08 15:50:54]   [Values] State has 4 messages
+[2026-07-08 15:50:54] ✓ Agent streaming complete (6 chunks)
+[2026-07-08 15:50:54] ✓ Agent response ready (750 chars)
+[2026-07-08 15:50:54]   Response preview: Các card màn hình có giá từ 1 triệu đến 2 triệu là:
+
+* Card màn hình ASUS GT1030-SL-2G-BRK của hãng ASUS với giá 1,950,000 VND.
+* Card Màn Hình VGA Gi
+[2026-07-08 15:50:54] ✓ ProductMemory persisted for next turn
+[2026-07-08 15:50:54] ✅ Agent execution completed successfully
+[2026-07-08 15:50:54] 📊 Response length: 750 chars
+[2026-07-08 15:50:54] 🛠️ Tool calls: []
+[2026-07-08 15:50:54] 📈 Tool results: {'search_products': 3}
+[2026-07-08 15:50:54] 📨 Displaying agent response (750 chars)

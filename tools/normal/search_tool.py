@@ -1,6 +1,7 @@
 import asyncio
 import json
 import re
+import socket
 import time
 import traceback
 from os import getenv
@@ -19,8 +20,8 @@ from .intent_filters import (
     _expand_query_with_product_type_aliases,
     _filter_products_by_intent,
     _filter_products_with_specific_price,
-    _is_price_comparison_query,
-    _normalize_user_query,
+    _is_price_query,
+    _normalize_query_text,
 )
 from .logging_utils import _log
 from .models import ProductMemory
@@ -38,6 +39,33 @@ def _vector_preview(vec: List[float], max_items: int = 8) -> str:
     preview = ", ".join(f"{x:.4f}" for x in vec[:max_items])
     suffix = ", ..." if len(vec) > max_items else ""
     return f"[{preview}{suffix}]"
+
+
+def _normalize_db_host(raw_host: str) -> str:
+    """Normalize host value loaded from env (trim spaces/quotes and strip scheme/path)."""
+    host = (raw_host or "").strip().strip("\"'")
+    if not host:
+        return ""
+
+    if "://" in host:
+        host = host.split("://", 1)[1]
+    host = host.split("/", 1)[0]
+    return host.strip()
+
+
+def _candidate_db_hosts(host: str) -> List[str]:
+    """Build candidate hosts, including Neon canonical fallback from '*-pooler.<host>' form."""
+    candidates: List[str] = []
+    base = _normalize_db_host(host)
+    if base:
+        candidates.append(base)
+
+    if "-pooler." in base:
+        neon_canonical = base.split("-pooler.", 1)[1].strip()
+        if neon_canonical and neon_canonical not in candidates:
+            candidates.append(neon_canonical)
+
+    return candidates
 
 
 _SPEC_QUERY_PATTERNS = [
@@ -79,7 +107,7 @@ class SearchProductsArgs(BaseModel):
     """Schema tham số cho tool search_products."""
 
     user_query: str = Field(default="", description="Câu người dùng gõ nguyên văn. Nếu để trống, tự động tổng hợp từ các structured fields.")
-    max_results: int = Field(default=5, description="Số lượng kết quả tối đa (mặc định 5).")
+    max_results: int = Field(default=20, description="Số lượng kết quả tối đa (mặc định 20).")
     product_type: Optional[str] = Field(default=None, description='Loại thiết bị. VD: "ổ cứng ngoài", "máy chủ", "laptop".')
     brand: Optional[str] = Field(default=None, description='Hãng sản xuất. VD: "WD", "Dell", "HPE", "Synology".')
     series: Optional[str] = Field(default=None, description='Dòng sản phẩm. VD: "My Book", "PowerEdge", "ThinkPad".')
@@ -173,7 +201,7 @@ class SearchProductsArgs(BaseModel):
 @tool(args_schema=SearchProductsArgs)
 async def search_products(
     user_query: str,
-    max_results: int = 5,
+    max_results: int = 20,
     product_type: Optional[str] = None,
     brand: Optional[str] = None,
     series: Optional[str] = None,
@@ -204,8 +232,8 @@ async def search_products(
     memory_tokens = memory.to_search_tokens()
 
     raw_query = getenv("RUN_USER_QUERY", user_query).strip()
-    rule_normalized_query = _normalize_user_query(raw_query)
-    base_query = await normalize_query_with_llm(raw_query=raw_query, fallback_query=rule_normalized_query)
+    fallback_query = _normalize_query_text(raw_query)
+    base_query = await normalize_query_with_llm(raw_query=raw_query, fallback_query=fallback_query)
     if memory_tokens:
         extra = [t for t in memory_tokens if t.lower() not in base_query.lower()]
         effective_query = " ".join(extra + [base_query]) if extra else base_query
@@ -213,10 +241,10 @@ async def search_products(
         effective_query = base_query
 
     _log("START", f"user_query='{user_query}', max_results={max_results}")
-    if raw_query != rule_normalized_query:
-        _log("NORMALIZE", f"rule_normalized_query='{rule_normalized_query}' from raw='{raw_query}'")
-    if rule_normalized_query != base_query:
-        _log("NORMALIZE", f"final_normalized_query='{base_query}' from rule='{rule_normalized_query}'")
+    if raw_query != fallback_query:
+        _log("NORMALIZE", f"fallback_query='{fallback_query}' from raw='{raw_query}'")
+    if fallback_query != base_query:
+        _log("NORMALIZE", f"final_normalized_query='{base_query}' from fallback='{fallback_query}'")
     _log("MEMORY", f"ProductMemory={memory.to_log_dict()}")
 
     intent = _build_search_intent(memory, base_query, effective_query)
@@ -241,7 +269,7 @@ async def search_products(
             kw_pats.append(p)
     kw_pats = kw_pats[:12]
 
-    db_host = getenv("POSTGRES_HOST", "localhost")
+    db_host = _normalize_db_host(getenv("POSTGRES_HOST", "localhost"))
     db_port = int(getenv("POSTGRES_PORT", "5432"))
     db_name = getenv("POSTGRES_DB", "server_products")
     db_user = getenv("POSTGRES_USER", "postgres")
@@ -257,6 +285,32 @@ async def search_products(
         "CONFIG",
         f"Connecting PostgreSQL host={db_host} port={db_port} db={db_name} user={db_user} table={db_table} password={safe_pw}",
     )
+
+    candidate_hosts = _candidate_db_hosts(db_host)
+    if not candidate_hosts:
+        _log("ERROR", "POSTGRES_HOST is empty after normalization")
+        return _error_json("POSTGRES_HOST đang rỗng hoặc không hợp lệ.")
+
+    selected_host: Optional[str] = None
+    for candidate in candidate_hosts:
+        try:
+            addr_infos = socket.getaddrinfo(candidate, db_port, type=socket.SOCK_STREAM)
+            resolved_addresses = sorted({info[4][0] for info in addr_infos if info and len(info) >= 5 and info[4]})
+            sample = ", ".join(resolved_addresses[:3]) if resolved_addresses else "(no addresses)"
+            _log("DNS", f"Resolved host '{candidate}' -> {sample}")
+            selected_host = candidate
+            break
+        except socket.gaierror as e:
+            _log("DNS", f"Resolve failed for host '{candidate}': {e}")
+
+    if not selected_host:
+        return _error_json(
+            f"Không phân giải được tên máy chủ DB '{db_host}'. Kiểm tra POSTGRES_HOST hoặc DNS mạng."
+        )
+
+    if selected_host != db_host:
+        _log("DNS", f"Using fallback host '{selected_host}' instead of '{db_host}'")
+        db_host = selected_host
 
     try:
         pool_min_size = int(getenv("POSTGRES_POOL_MIN_SIZE", "1"))
@@ -530,10 +584,10 @@ async def search_products(
                 products = _filter_products_by_intent(products, intent)
                 _log("FILTER", f"Intent filter applied: filtered {original_count} → {len(products)} products")
 
-            if (_is_price_comparison_query(base_query) or _is_price_comparison_query(effective_query)) and products:
+            if (_is_price_query(base_query) or _is_price_query(effective_query)) and products:
                 original_count = len(products)
                 products = _filter_products_with_specific_price(products)
-                _log("FILTER", f"Price comparison query detected: filtered {original_count} → {len(products)} products")
+                _log("FILTER", f"Price query detected: filtered {original_count} → {len(products)} products")
                 if not products:
                     _log("FILTER", "No products with specific prices found")
 
@@ -576,6 +630,12 @@ async def search_products(
         _log("ERROR", f"PostgreSQL error: {e}")
         _log("ERROR", traceback.format_exc())
         return _error_json(f"Lỗi cơ sở dữ liệu: {str(e)}")
+    except socket.gaierror as e:
+        _log("ERROR", f"DNS resolve error for host '{db_host}': {e}")
+        _log("ERROR", traceback.format_exc())
+        return _error_json(
+            f"Không phân giải được hostname DB '{db_host}'. Kiểm tra POSTGRES_HOST/DNS hoặc thử lại sau."
+        )
     except (ConnectionError, OSError) as e:
         _log("ERROR", f"Connection error: {e}")
         _log("ERROR", traceback.format_exc())

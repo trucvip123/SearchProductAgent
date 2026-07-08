@@ -54,6 +54,22 @@ def _is_topic_change(input_query: str, current_product: str | None, verbose: boo
     query_lower = input_query.lower()
     product_lower = current_product.lower()
 
+    def _is_more_results_followup(q: str) -> bool:
+        patterns = [
+            r"\bc[oò]n\b.*\bkh[aá]c\b",
+            r"s[aả]n\s*ph[aẩ]m\s*n[aà]o\s*kh[aá]c",
+            r"ngo[aà]i\s+ra",
+            r"kh[aá]c\s*(ko|kh[oô]ng)",
+        ]
+        return any(re.search(pattern, q or "") for pattern in patterns)
+
+    # "còn ... khác" usually means ask for more results under current constraints,
+    # not a topic switch.
+    if _is_more_results_followup(query_lower):
+        if verbose:
+            _log("  [TOPIC_DETECT] Follow-up 'more results' detected → same topic")
+        return False
+
     # Tìm brand của current_product
     current_brand: str | None = None
     for brand, keywords in brand_keywords.items():
@@ -78,7 +94,16 @@ def _is_topic_change(input_query: str, current_product: str | None, verbose: boo
         return True
 
     # Explicit topic change keywords
-    explicit_change = ["sản phẩm khác", "tìm cái khác", "thay đổi", "loại khác", "cái khác"]
+    explicit_change = [
+        "thay đổi",
+        "đổi sang",
+        "chuyển sang",
+        "hãng khác",
+        "brand khác",
+        "loại khác",
+        "dòng khác",
+        "model khác",
+    ]
     for kw in explicit_change:
         if kw in query_lower:
             if verbose:
@@ -96,6 +121,20 @@ def _build_effective_query(input_query: str, current_product: str | None, verbos
     Nếu query đã chứa tên/keyword sản phẩm thì giữ nguyên.
     Nếu phát hiện topic change thì không enrich.
     """
+    def _is_more_results_followup(q: str) -> bool:
+        patterns = [
+            r"\bc[oò]n\b.*\bkh[aá]c\b",
+            r"s[aả]n\s*ph[aẩ]m\s*n[aà]o\s*kh[aá]c",
+            r"ngo[aà]i\s+ra",
+            r"kh[aá]c\s*(ko|kh[oô]ng)",
+        ]
+        return any(re.search(pattern, q or "") for pattern in patterns)
+
+    if _is_more_results_followup(input_query.lower()):
+        if verbose:
+            _log("  [QUERY_BUILD] Follow-up 'more results' → keep query as-is")
+        return input_query
+
     if not current_product:
         if verbose:
             _log(f"  [QUERY_BUILD] No current_product → keep query as-is")

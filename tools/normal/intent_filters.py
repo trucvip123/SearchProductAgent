@@ -1,5 +1,6 @@
 import re
 import ast
+import unicodedata
 from typing import Optional, Any, List, Dict
 
 from .logging_utils import _log
@@ -24,6 +25,7 @@ _KNOWN_BRANDS = {
 _PRODUCT_TYPE_PATTERNS = [
     (r"\b(laptop|notebook|ultrabook)\b", "laptop"),
     (r"\b(may chu|máy chu|server|rack server)\b", "máy chủ"),
+    (r"\b(card do hoa|card đồ họa|card man hinh|card màn hình|vga|gpu|graphics card)\b", "card đồ họa"),
     (r"\b(man hinh|màn hình|monitor|lcd)\b", "màn hình máy tính"),
     (r"\b(o cung ngoai|ổ cứng ngoài|external hdd|external drive)\b", "ổ cứng ngoài"),
     (r"\b(nas)\b", "nas"),
@@ -34,6 +36,7 @@ _PRODUCT_TYPE_PATTERNS = [
 _PRODUCT_TYPE_MATCH_ALIASES = {
     "laptop": ["laptop", "notebook", "ultrabook", "thinkpad", "ideapad", "latitude"],
     "máy chủ": ["máy chủ", "may chu", "server", "poweredge", "proliant", "thinksystem"],
+    "card đồ họa": ["card đồ họa", "card do hoa", "card màn hình", "card man hinh", "vga", "gpu", "graphics card"],
     "màn hình máy tính": ["màn hình", "man hinh", "monitor", "lcd", "display"],
     "ổ cứng ngoài": ["ổ cứng ngoài", "o cung ngoai", "external hdd", "external drive"],
     "nas": ["nas", "network attached storage"],
@@ -86,6 +89,13 @@ _QUERY_TYPO_REPLACEMENTS = {
 
 def _normalize_query_text(text: str) -> str:
     return re.sub(r"\s+", " ", (text or "").strip())
+
+
+def _fold_text_for_match(text: str) -> str:
+    """Lower/strip diacritics for accent-insensitive text matching."""
+    value = _normalize_query_text(text).lower().replace("đ", "d")
+    decomposed = unicodedata.normalize("NFD", value)
+    return "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
 
 
 def _normalize_user_query(text: str) -> str:
@@ -158,7 +168,20 @@ def _get_product_type_aliases(product_type: Optional[str]) -> List[str]:
         return []
 
     normalized_type = _normalize_user_query(product_type)
-    aliases = _PRODUCT_TYPE_MATCH_ALIASES.get(normalized_type, [product_type])
+    aliases = _PRODUCT_TYPE_MATCH_ALIASES.get(normalized_type)
+    if aliases is None:
+        folded_type = _fold_text_for_match(normalized_type)
+        for canonical_type, candidate_aliases in _PRODUCT_TYPE_MATCH_ALIASES.items():
+            folded_canonical = _fold_text_for_match(canonical_type)
+            if folded_type == folded_canonical:
+                aliases = candidate_aliases
+                break
+            if any(_fold_text_for_match(alias) == folded_type for alias in candidate_aliases):
+                aliases = candidate_aliases
+                break
+
+    if aliases is None:
+        aliases = [product_type]
 
     seen = set()
     ordered_aliases: List[str] = []
@@ -256,15 +279,24 @@ def _parse_structured_price_range(price_range: Any) -> tuple[Optional[int], Opti
         min_raw = data.get("min", data.get("gte", data.get("gt")))
         max_raw = data.get("max", data.get("lte", data.get("lt")))
 
-        min_v = _price_token_to_vnd(str(min_raw), None) if min_raw is not None else None
-        max_v = _price_token_to_vnd(str(max_raw), None) if max_raw is not None else None
+        # Structured fields often come as {"min": 1, "max": 2} meaning 1-2 million VND.
+        min_v = _to_intent_price_vnd(str(min_raw), None) if min_raw is not None else None
+        max_v = _to_intent_price_vnd(str(max_raw), None) if max_raw is not None else None
         return min_v, max_v
 
     text = _normalize_price_query_text(str(data))
-    min_match = re.search(r"\b(?:min|gte|gt)\b\s*[:=]\s*(\d[\d.,]*)", text)
-    max_match = re.search(r"\b(?:max|lte|lt)\b\s*[:=]\s*(\d[\d.,]*)", text)
-    min_v = _price_token_to_vnd(min_match.group(1), None) if min_match else None
-    max_v = _price_token_to_vnd(max_match.group(1), None) if max_match else None
+    min_match = re.search(
+        r"\b(?:min|gte|gt)\b\s*[:=]\s*(\d[\d.,]*)\s*(tỷ|ty|b|triệu|trieu|tr|m|k|nghìn|nghin|vnd|đ|dong)?\b",
+        text,
+        re.IGNORECASE,
+    )
+    max_match = re.search(
+        r"\b(?:max|lte|lt)\b\s*[:=]\s*(\d[\d.,]*)\s*(tỷ|ty|b|triệu|trieu|tr|m|k|nghìn|nghin|vnd|đ|dong)?\b",
+        text,
+        re.IGNORECASE,
+    )
+    min_v = _to_intent_price_vnd(min_match.group(1), min_match.group(2)) if min_match else None
+    max_v = _to_intent_price_vnd(max_match.group(1), max_match.group(2)) if max_match else None
     return min_v, max_v
 
 
@@ -288,7 +320,7 @@ def _parse_price_intent(text: str) -> tuple[Optional[int], Optional[int]]:
     # Try to match explicit price ranges with proper context
     # Only match if preceded by price-related keywords or in a price context
     range_match = re.search(
-        r"(?:từ|from|giá)?\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?\s*(?:đến|tới|to|\-|~|và)\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?",
+        r"(?:từ|from|giá)?\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?\s*(?:đến|tới|den|toi|to|\-|~|và)\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?",
         query,
         re.IGNORECASE,
     )
@@ -439,6 +471,33 @@ def _is_price_comparison_query(query: str) -> bool:
     return False
 
 
+def _is_price_query(query: str) -> bool:
+    query_lower = _normalize_user_query(query)
+    if not query_lower:
+        return False
+
+    if _is_price_comparison_query(query_lower):
+        return True
+
+    price_question_patterns = [
+        r"\bgiá\b",
+        r"\bgia\b",
+        r"bao\s+nhiêu",
+        r"bao\s+nhieu",
+        r"bao\s+tiền",
+        r"bao\s+tien",
+        r"mức\s+giá",
+        r"gia\s+bao\s+nhi[eê]u",
+        r"price",
+    ]
+
+    for pattern in price_question_patterns:
+        if re.search(pattern, query_lower):
+            return True
+
+    return False
+
+
 def _filter_products_with_specific_price(products: List[Dict]) -> List[Dict]:
     filtered = []
     for product in products:
@@ -478,7 +537,21 @@ def _deduplicate_products(products: List[Dict]) -> List[Dict]:
 
 def _product_matches_type_intent(product_type: str, searchable_text: str) -> bool:
     aliases = _get_product_type_aliases(product_type)
-    return any(alias and alias.lower() in searchable_text for alias in aliases)
+    searchable_text_lower = _normalize_query_text(searchable_text).lower()
+    searchable_text_folded = _fold_text_for_match(searchable_text)
+
+    for alias in aliases:
+        if not alias:
+            continue
+        alias_text = _normalize_query_text(alias).lower()
+        if alias_text and alias_text in searchable_text_lower:
+            return True
+
+        alias_folded = _fold_text_for_match(alias)
+        if alias_folded and alias_folded in searchable_text_folded:
+            return True
+
+    return False
 
 
 def _product_matches_text_intent(product: Dict, intent: SearchIntent) -> bool:

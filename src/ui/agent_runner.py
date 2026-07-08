@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from datetime import datetime
 from typing import Callable, Optional
 
@@ -17,6 +18,59 @@ from agent import orchestrator_agent
 from product_memory import ProductMemoryManager
 from .logging_utils import print_log
 from .query_utils import extract_current_product, is_topic_change, build_effective_query
+
+
+_PRICE_SKIP_KEYWORDS = [
+    "liên hệ",
+    "báo giá",
+    "n/a",
+    "unknown",
+]
+
+
+def _is_price_query(text: str) -> bool:
+    q = (text or "").lower()
+    patterns = [
+        r"\bgiá\b",
+        r"\bgia\b",
+        r"bao\s+nhiêu",
+        r"bao\s+nhieu",
+        r"bao\s+tiền",
+        r"bao\s+tien",
+    ]
+    return any(re.search(p, q) for p in patterns)
+
+
+def _has_specific_price(price_text: str) -> bool:
+    price = (price_text or "").strip().lower()
+    if not price:
+        return False
+    if any(skip in price for skip in _PRICE_SKIP_KEYWORDS):
+        return False
+    return bool(re.search(r"\d", price))
+
+
+def _response_mentions_any_product(response: str, products: list[dict]) -> bool:
+    response_lower = (response or "").lower()
+    if not response_lower:
+        return False
+    for product in products or []:
+        name = str(product.get("tên") or "").strip().lower()
+        if name and name in response_lower:
+            return True
+    return False
+
+
+def _build_grounded_price_response(products: list[dict]) -> str:
+    if not products:
+        return ""
+
+    priced_products = [p for p in products if _has_specific_price(str(p.get("giá") or ""))]
+    candidate = priced_products[0] if priced_products else products[0]
+
+    name = str(candidate.get("tên") or "Sản phẩm").strip()
+    price = str(candidate.get("giá") or "Chưa có thông tin giá").strip()
+    return f"{name} có giá {price}."
 
 
 async def run_agent_query(
@@ -50,6 +104,7 @@ async def run_agent_query(
     response_chunks = []
     saw_text_chunk = False
     new_current_product = current_product
+    latest_products: list[dict] = []
 
     def _log_msg(msg: str):
         ts = datetime.now().strftime("%H:%M:%S")
@@ -177,6 +232,7 @@ async def run_agent_query(
                             product_count = len(result_data.get("products", []))
                             tool_results_received[tool_name] = product_count
                             _log_msg(f"📊 TOOL_RESULT: {tool_name} → {product_count} products")
+                            latest_products = result_data.get("products", []) or []
 
                             extracted = extract_current_product(chunk.content or "")
                             if extracted:
@@ -197,6 +253,16 @@ async def run_agent_query(
         _log_msg(f"  Response preview: {response[:150]}")
     else:
         _log_msg(f"  ⚠️ Response is EMPTY!")
+
+    # Ground final text to tool result for price questions, avoiding unrelated hallucinated products.
+    if latest_products and _is_price_query(query) and not _response_mentions_any_product(response, latest_products):
+        response = _build_grounded_price_response(latest_products)
+        _log_msg("✓ Response grounded from latest search_products result")
+        if on_stream_chunk:
+            try:
+                on_stream_chunk(response)
+            except Exception as callback_error:
+                _log_msg(f"⚠ Stream callback error: {callback_error}")
     
     # Persist ProductMemory for next turn
     product_memory_manager.persist_current()

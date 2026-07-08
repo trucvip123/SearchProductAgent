@@ -101,11 +101,19 @@ def _is_product_query(query: str) -> bool:
         "giá", "gia", "cấu hình", "cau hinh", "cpu", "ram", "ssd", "hdd",
         "model", "series", "link", "sản phẩm", "san pham", "máy chủ", "may chu",
         "server", "laptop", "thinkpad", "lenovo", "dell", "hpe", "asus", "wd",
-        "seagate", "synology", "proliant", "poweredge", "dưới", "duoi", "triệu", "trieu",
+        "seagate", "synology", "qnap", "nas", "storage", "raid", "proliant",
+        "poweredge", "dưới", "duoi", "triệu", "trieu",
     ]
 
     if any(k in q for k in product_keywords):
         return True
+
+    # Model/SKU-like token (e.g. R740, DS925+, RX580, E5-2680) should be treated as product query.
+    for token in re.findall(r"[a-z0-9.+-]+", q):
+        if len(token) < 4:
+            continue
+        if any(ch.isalpha() for ch in token) and any(ch.isdigit() for ch in token):
+            return True
 
     return bool(re.search(r"\b\d+(?:[.,]\d+)?\s*(triệu|trieu|tr|m|tỷ|ty|b|vnd|đ)?\b", q))
 

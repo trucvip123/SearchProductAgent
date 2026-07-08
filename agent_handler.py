@@ -4,6 +4,7 @@ Consolidates streaming, message processing, and ProductMemory management
 """
 
 import json
+import re
 from typing import Callable, Optional
 
 from langchain_core.messages import (
@@ -15,6 +16,59 @@ from langchain_core.messages import (
 
 from agent import orchestrator_agent
 from tools.normal.models import ProductMemory
+
+
+_PRICE_SKIP_KEYWORDS = [
+    "liên hệ",
+    "báo giá",
+    "n/a",
+    "unknown",
+]
+
+
+def _is_price_query(text: str) -> bool:
+    q = (text or "").lower()
+    patterns = [
+        r"\bgiá\b",
+        r"\bgia\b",
+        r"bao\s+nhiêu",
+        r"bao\s+nhieu",
+        r"bao\s+tiền",
+        r"bao\s+tien",
+    ]
+    return any(re.search(p, q) for p in patterns)
+
+
+def _has_specific_price(price_text: str) -> bool:
+    price = (price_text or "").strip().lower()
+    if not price:
+        return False
+    if any(skip in price for skip in _PRICE_SKIP_KEYWORDS):
+        return False
+    return bool(re.search(r"\d", price))
+
+
+def _response_mentions_any_product(response: str, products: list[dict]) -> bool:
+    response_lower = (response or "").lower()
+    if not response_lower:
+        return False
+    for product in products or []:
+        name = str(product.get("tên") or "").strip().lower()
+        if name and name in response_lower:
+            return True
+    return False
+
+
+def _build_grounded_price_response(products: list[dict]) -> str:
+    if not products:
+        return ""
+
+    priced_products = [p for p in products if _has_specific_price(str(p.get("giá") or ""))]
+    candidate = priced_products[0] if priced_products else products[0]
+
+    name = str(candidate.get("tên") or "Sản phẩm").strip()
+    price = str(candidate.get("giá") or "Chưa có thông tin giá").strip()
+    return f"{name} có giá {price}."
 
 
 # ============================================================================
@@ -195,6 +249,7 @@ async def run_agent_query(
     response_chunks: list[str] = []
     saw_text_chunk = False
     chunk_count = 0
+    latest_products: list[dict] = []
     
     async for mode, data in orchestrator_agent.astream(
         {"messages": messages},
@@ -215,8 +270,8 @@ async def run_agent_query(
                 if chunk.content:
                     response_chunks.append(chunk.content)
                     saw_text_chunk = True
-                    if verbose_logs:
-                        log_func(f"  ✓ AIMessageChunk: {len(chunk.content)} chars")
+                    # if verbose_logs:
+                    #     log_func(f"  ✓ AIMessageChunk: {len(chunk.content)} chars")
                 
                 # Extract tool calls from chunks
                 for tc in getattr(chunk, "tool_call_chunks", None) or []:
@@ -245,6 +300,7 @@ async def run_agent_query(
                         result_data = json.loads(chunk.content or "{}")
                         product_count = len(result_data.get("products", []))
                         result.tool_results_received[chunk.name] = product_count
+                        latest_products = result_data.get("products", []) or []
                         
                         # Update current product
                         extracted = extract_current_product(chunk.content or "")
@@ -267,6 +323,10 @@ async def run_agent_query(
     
     if not result.response:
         result.response = "".join(response_chunks).strip()
+
+    # Ground final text to tool result for price questions, avoiding unrelated hallucinated products.
+    if latest_products and _is_price_query(query) and not _response_mentions_any_product(result.response, latest_products):
+        result.response = _build_grounded_price_response(latest_products)
     
     # Handle fallback for pseudo tool calls
     if not result.tool_calls_made and not result.tool_results_received:
