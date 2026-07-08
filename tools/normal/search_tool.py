@@ -40,6 +40,41 @@ def _vector_preview(vec: List[float], max_items: int = 8) -> str:
     return f"[{preview}{suffix}]"
 
 
+_SPEC_QUERY_PATTERNS = [
+    re.compile(
+        r"\b(?:vga|gpu|card\s*man\s*hinh|card\s*màn\s*hình|cpu|ram|ssd|hdd|storage|interface)\s*[:=\-]\s*([^,;\n]+)",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bc[oó]\s+(?:vga|gpu|cpu|ram|ssd|hdd|storage|interface)\s*[:=\-]?\s*([^,;\n]+)",
+        re.IGNORECASE,
+    ),
+]
+
+
+def _extract_query_spec_terms(query: str) -> List[str]:
+    """Extract spec constraints from free-text query, e.g. 'vga: matrox g200e 16mb'."""
+    text = (query or "").strip()
+    if not text:
+        return []
+
+    terms: List[str] = []
+    for pattern in _SPEC_QUERY_PATTERNS:
+        for match in pattern.finditer(text):
+            value = re.sub(r"\s+", " ", (match.group(1) or "").strip(" .,:;|"))
+            if len(value) >= 2:
+                terms.append(value)
+
+    unique_terms: List[str] = []
+    seen = set()
+    for term in terms:
+        key = term.lower()
+        if key not in seen:
+            seen.add(key)
+            unique_terms.append(term)
+    return unique_terms
+
+
 class SearchProductsArgs(BaseModel):
     """Schema tham số cho tool search_products."""
 
@@ -257,7 +292,7 @@ async def search_products(
 
             products = []
 
-            _log("SCHEMA", "n8n_vectors → Hybrid Vector + FTS + Keyword")
+            _log("SCHEMA", "n8n_vectors -> Hybrid Vector + FTS + Keyword")
             metadata_clauses, metadata_params = _build_metadata_filter_clauses(
                 intent,
                 {
@@ -266,8 +301,18 @@ async def search_products(
                     "model": ["text", "metadata::text"],
                 },
             )
+
+            # Add free-text spec constraints (e.g. VGA/GPU/CPU/RAM after ':' tokens).
+            spec_terms = _extract_query_spec_terms(effective_query)
+            for spec_term in spec_terms:
+                metadata_params.append(f"%{spec_term}%")
+                param_idx = len(metadata_params)
+                metadata_clauses.append(f"(text ILIKE ${param_idx} OR metadata::text ILIKE ${param_idx})")
+
             metadata_where = " AND ".join(metadata_clauses)
             _log("HYBRID", f"metadata_where='{metadata_where}' metadata_params={metadata_params}")
+            if spec_terms:
+                _log("HYBRID", f"query_spec_terms={spec_terms}")
 
             vec_rows_n8n: List = []
             if has_embedding_col:
@@ -312,15 +357,20 @@ async def search_products(
                         if vec_rows_n8n:
                             vector_products = []
                             for row in vec_rows_n8n:
-                                text_value = row.get("text") or ""
-                                m_name = re.search(r"Tên sản phẩm:\s*(.+?)(?:\.|Giá)", text_value)
-                                product_name = m_name.group(1).strip() if m_name else "N/A"
-                                vector_products.append(
-                                    {
-                                        "id": str(row.get("id")),
-                                        "tên": product_name,
-                                    }
-                                )
+                                try:
+                                    text_value = (row.get("text") if hasattr(row, 'get') else getattr(row, 'text', '')) or ""
+                                    row_id = str(row.get("id") if hasattr(row, 'get') else getattr(row, 'id', ''))
+                                    m_name = re.search(r"Tên sản phẩm:\s*(.+?)(?:\.|Giá)", text_value)
+                                    product_name = m_name.group(1).strip() if m_name else "N/A"
+                                    vector_products.append(
+                                        {
+                                            "id": row_id,
+                                            "tên": product_name,
+                                        }
+                                    )
+                                except (AttributeError, KeyError, TypeError) as e:
+                                    _log("VECTOR", f"Failed to parse vector row: {type(e).__name__}: {e}")
+                                    continue
                             _log("HYBRID", f"Vector(n8n) product_list={json.dumps(vector_products, ensure_ascii=False)}")
                         if vector_trace and vec_rows_n8n:
                             top_ids = [str(r.get("id")) for r in vec_rows_n8n[:5]]
@@ -375,53 +425,87 @@ async def search_products(
                 except Exception as exc:
                     _log("HYBRID", f"Keyword(n8n) failed: {exc}")
 
-            merged_n8n = _rrf_merge(
-                fts_rows_n8n,
-                vec_rows_n8n,
-                kw_rows_n8n,
-                lambda r: str(r.get("id") or ""),
-                max_results,
-            )
-            _log("HYBRID", f"RRF merged(n8n)={len(merged_n8n)}")
-            for row, score in merged_n8n:
-                text_value = row.get("text") or ""
-                name = "N/A"
-                brand_value = "Unknown"
-                price = "N/A"
-                config = "N/A"
-                _log("HYBRID", f"Parsing n8n row id={row.get('id')} score={score} text_len={len(text_value)}")
-
-                m_name = re.search(r"Tên sản phẩm:\s*(.+?)(?:\.|Giá)", text_value)
-                if m_name:
-                    name = m_name.group(1).strip()
-                m_price = re.search(r"Giá bán:\s*([^\n.]+)", text_value)
-                if m_price:
-                    price = m_price.group(1).strip()
-                m_config = re.search(r"Thông số kỹ thuật:\s*(.+?)(?:Trang sản phẩm:|$)", text_value, re.DOTALL)
-                if m_config:
-                    config = m_config.group(1).strip()
-
-                product_link_from_text = "N/A"
-                m_link = re.search(r"Trang sản phẩm:\s*(https?://[^\s\)]+|[^\s\)]+)", text_value, re.IGNORECASE)
-                if m_link:
-                    product_link_from_text = m_link.group(1).strip()
-
-                for candidate in ["DELL", "HPE", "ASUS", "SSN", "LENOVO", "SUPERMICRO", "AMD", "INTEL", "WD", "SEAGATE", "SYNOLOGY"]:
-                    if candidate in text_value.upper():
-                        brand_value = candidate
-                        break
-                products.append(
-                    {
-                        "id": str(row.get("id")),
-                        "tên": name,
-                        "giá": price,
-                        "hãng": brand_value,
-                        "cấu_hình": config,
-                        "link_sản_phẩm": product_link_from_text,
-                        "_score": score,
-                        "_text": text_value,
-                    }
+            _log("HYBRID", f"RRF input: fts_rows={len(fts_rows_n8n)}, vec_rows={len(vec_rows_n8n)}, kw_rows={len(kw_rows_n8n)}")
+            
+            try:
+                merged_n8n = _rrf_merge(
+                    fts_rows_n8n,
+                    vec_rows_n8n,
+                    kw_rows_n8n,
+                    lambda r: str((r.get("id") if hasattr(r, 'get') else getattr(r, 'id', '')) or ""),
+                    max_results,
                 )
+            except AttributeError as ae:
+                _log("ERROR", f"AttributeError in _rrf_merge: {ae}")
+                _log("ERROR", f"fts_rows_n8n type: {type(fts_rows_n8n)}, first: {type(fts_rows_n8n[0]) if fts_rows_n8n else 'empty'}")
+                _log("ERROR", f"vec_rows_n8n type: {type(vec_rows_n8n)}, first: {type(vec_rows_n8n[0]) if vec_rows_n8n else 'empty'}")
+                _log("ERROR", f"kw_rows_n8n type: {type(kw_rows_n8n)}, first: {type(kw_rows_n8n[0]) if kw_rows_n8n else 'empty'}")
+                _log("ERROR", traceback.format_exc())
+                # Graceful fallback: use FTS results directly instead of failing
+                merged_n8n = [(row, 1.0 / (60 + rank)) for rank, row in enumerate(fts_rows_n8n[:max_results], start=1)]
+                if not merged_n8n:
+                    merged_n8n = [(row, 1.0 / (60 + rank)) for rank, row in enumerate(vec_rows_n8n[:max_results], start=1)]
+                _log("ERROR", f"Fallback to direct rows: {len(merged_n8n)} results")
+            
+            _log("HYBRID", f"RRF merged(n8n)={len(merged_n8n)}")
+            if not merged_n8n:
+                _log("RESULT", "No products found in database")
+                return json.dumps(
+                    {
+                        "status": "no_products",
+                        "message": f"Không tìm thấy sản phẩm phù hợp với: '{effective_query}'",
+                        "query": effective_query,
+                        "products": [],
+                    },
+                    ensure_ascii=False,
+                )
+                
+            for row, score in merged_n8n:
+                try:
+                    # Defensive: handle both dict-like and asyncpg.Record access
+                    text_value = (row.get("text") if hasattr(row, 'get') else getattr(row, 'text', '')) or ""
+                    row_id = str(row.get("id") if hasattr(row, 'get') else getattr(row, 'id', ''))
+                    name = "N/A"
+                    brand_value = "Unknown"
+                    price = "N/A"
+                    config = "N/A"
+                    _log("HYBRID", f"Parsing n8n row id={row_id} score={score} text_len={len(text_value)}")
+
+                    m_name = re.search(r"Tên sản phẩm:\s*(.+?)(?:\.|Giá)", text_value)
+                    if m_name:
+                        name = m_name.group(1).strip()
+                    m_price = re.search(r"Giá bán:\s*([^\n.]+)", text_value)
+                    if m_price:
+                        price = m_price.group(1).strip()
+                    m_config = re.search(r"Thông số kỹ thuật:\s*(.+?)(?:Trang sản phẩm:|$)", text_value, re.DOTALL)
+                    if m_config:
+                        config = m_config.group(1).strip()
+
+                    product_link_from_text = "N/A"
+                    m_link = re.search(r"Trang sản phẩm:\s*(https?://[^\s\)]+|[^\s\)]+)", text_value, re.IGNORECASE)
+                    if m_link:
+                        product_link_from_text = m_link.group(1).strip()
+
+                    for candidate in ["DELL", "HPE", "ASUS", "SSN", "LENOVO", "SUPERMICRO", "AMD", "INTEL", "WD", "SEAGATE", "SYNOLOGY"]:
+                        if candidate in text_value.upper():
+                            brand_value = candidate
+                            break
+                    products.append(
+                        {
+                            "id": row_id,
+                            "tên": name,
+                            "giá": price,
+                            "hãng": brand_value,
+                            "cấu_hình": config,
+                            "link_sản_phẩm": product_link_from_text,
+                            "_score": score,
+                            "_text": text_value,
+                        }
+                    )
+                except (AttributeError, KeyError, TypeError) as e:
+                    _log("ERROR", f"Failed to parse row: {type(e).__name__}: {e}")
+                    _log("ERROR", f"Row type: {type(row).__name__}, Row: {row}")
+                    continue
 
             _log("RESULT", f"Products parsed={len(products)}")
             if products:
@@ -501,7 +585,7 @@ async def search_products(
         _log("ERROR", traceback.format_exc())
         return _error_json("Hết thời gian chờ kết nối cơ sở dữ liệu.")
     except Exception as e:
-        _log("ERROR", f"Unexpected error occurred: {e}")
-        _log("ERROR", traceback.format_exc())
+        _log("ERROR", f"Unexpected error occurred: {type(e).__name__}: {e}")
+        _log("ERROR", f"Full traceback:\n{traceback.format_exc()}")
         message = str(e) if isinstance(e, ValueError) else _product_error_message(e)
         return _error_json(message)

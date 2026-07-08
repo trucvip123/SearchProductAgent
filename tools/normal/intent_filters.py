@@ -285,16 +285,31 @@ def _parse_price_intent(text: str) -> tuple[Optional[int], Optional[int]]:
     if not query:
         return None, None
 
+    # Try to match explicit price ranges with proper context
+    # Only match if preceded by price-related keywords or in a price context
     range_match = re.search(
-        r"(?:từ|from)?\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?\s*(?:đến|tới|to|\-|~|và)\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?",
+        r"(?:từ|from|giá)?\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?\s*(?:đến|tới|to|\-|~|và)\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?",
         query,
         re.IGNORECASE,
     )
     if range_match:
-        price_min = _to_intent_price_vnd(range_match.group(1), range_match.group(2))
-        price_max = _to_intent_price_vnd(range_match.group(3), range_match.group(4))
-        if price_min is not None and price_max is not None:
-            return min(price_min, price_max), max(price_min, price_max)
+        # Validate that group 2 and group 4 are actual price units, or both are empty/None
+        unit1 = _normalize_unit_token(range_match.group(2))
+        unit2 = _normalize_unit_token(range_match.group(4))
+        
+        # Valid if: both units are recognized price units, or both are empty
+        # This prevents "450p - 18" from being treated as a price range
+        valid_units = {"triệu", "tỷ", "k", "nghìn", "vnd", "đ", "dong"}
+        unit1_valid = unit1 in valid_units or unit1 == ""
+        unit2_valid = unit2 in valid_units or unit2 == ""
+        
+        # Accept range only if both units are valid (or empty), AND
+        # at least one unit is specified (to avoid matching random numbers)
+        if (unit1_valid and unit2_valid) and (unit1 in valid_units or unit2 in valid_units):
+            price_min = _to_intent_price_vnd(range_match.group(1), range_match.group(2))
+            price_max = _to_intent_price_vnd(range_match.group(3), range_match.group(4))
+            if price_min is not None and price_max is not None:
+                return min(price_min, price_max), max(price_min, price_max)
 
     upper_patterns = [
         r"(?:dưới|<=|không quá|tối đa|nhỏ hơn|thấp hơn)\s*(\d+(?:[.,]\d+)?)\s*([a-zA-ZÀ-ỹđ]+)?",

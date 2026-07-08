@@ -37,7 +37,7 @@ def main():
         print("   Biến bắt buộc:")
         print("   - OPENAI_BASE_URL (mặc định: http://localhost:11434/v1)")
         print("   - OPENAI_API_KEY (mặc định: ollama)")
-        print("   - LOCAL_MODEL (ví dụ: qwen2.5:7b-instruct)")
+        print("   - LOCAL_MODEL (ví dụ: llama3.1:8b)")
     
     # Check Python version
     if sys.version_info < (3, 10):

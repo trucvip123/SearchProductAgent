@@ -38,7 +38,7 @@ async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
 
     base_url = getenv("OPENAI_BASE_URL", "http://localhost:11434/v1").rstrip("/")
     api_key = getenv("OPENAI_API_KEY", "ollama")
-    model = getenv("LOCAL_MODEL", "qwen2.5:7b-instruct")
+    model = getenv("LOCAL_MODEL", "llama3.1:8b")
     timeout_sec = float(getenv("QUERY_NORMALIZER_TIMEOUT_SEC", "4.0"))
 
     system_prompt = (

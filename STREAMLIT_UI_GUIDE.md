@@ -152,7 +152,7 @@ streamlit run streamlit_app.py --server.port 8502
 1. Kiểm tra Ollama: `curl http://localhost:11434/api/tags`
 2. Kiểm tra `.env`:
    - `OPENAI_BASE_URL=http://localhost:11434/v1`
-   - `LOCAL_MODEL=qwen2.5:7b-instruct` (hoặc model của bạn)
+   - `LOCAL_MODEL=llama3.1:8b` (hoặc model của bạn)
 
 ### PostgreSQL connection error
 - Kiểm tra `.env`: POSTGRES_* variables

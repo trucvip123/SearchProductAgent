@@ -1,4 +1,6 @@
-# AI Agents Demo
+# SearchProductAgent - AI-Powered Product Search
+
+> **🏗️ Recently Refactored**: This project now follows best-practice directory structure! See [STRUCTURE.md](STRUCTURE.md) for the new organization and import patterns.
 
 Dự án này là một bộ agent Python dùng `openai-agents` để điều phối nhiều tác vụ khác nhau:
 
@@ -24,7 +26,7 @@ pip install -r requirements.txt
 3. Cài model local (ví dụ):
 
 ```bash
-ollama pull qwen2.5:7b-instruct
+ollama pull llama3.1:8b
 ```
 
 4. Tạo file `.env` từ `.env.example` và điền thông tin kết nối.
@@ -35,7 +37,7 @@ ollama pull qwen2.5:7b-instruct
 
 - `OPENAI_BASE_URL`: endpoint OpenAI-compatible của Ollama, mặc định `http://localhost:11434/v1`.
 - `OPENAI_API_KEY`: giá trị bất kỳ (ví dụ `ollama`) để tương thích client OpenAI.
-- `LOCAL_MODEL`: tên model Ollama dùng cho các agent (ví dụ `qwen2.5:7b-instruct`).
+- `LOCAL_MODEL`: tên model Ollama dùng cho các agent (ví dụ `llama3.1:8b`).
 
 ### Dùng cho tìm sản phẩm máy chủ
 
@@ -53,7 +55,7 @@ Ví dụ:
 ```env
 OPENAI_BASE_URL=http://localhost:11434/v1
 OPENAI_API_KEY=ollama
-LOCAL_MODEL=qwen2.5:7b-instruct
+LOCAL_MODEL=llama3.1:8b
 
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
@@ -159,12 +161,21 @@ flowchart TD
 ## Cấu trúc thư mục
 
 ```text
-agent.py
-main.py
-requirements.txt
-docs/
-tools/
+src/                              # Modern source code structure
+├── agent/                       # LLM agent orchestration
+├── tools/                       # Search tools
+├── models/                      # Data models
+├── utils/                       # Utilities & helpers
+└── ui/                          # Web interfaces
+
+tools/                           # Legacy tools (backward compatible)
+docs/                            # Documentation
+tests/                           # Test suite
+data/                            # Data files
+logs/                            # Application logs
 ```
+
+**For detailed information about the new structure, see [STRUCTURE.md](STRUCTURE.md)**
 
 ## Ghi chú
 
@@ -172,3 +183,4 @@ tools/
 - Nếu Ollama không chạy, hãy khởi động bằng lệnh `ollama serve`.
 - `server_product_agent` truy vấn PostgreSQL bằng `POSTGRES_*`.
 - Nếu câu hỏi của bạn không rõ ngữ cảnh, hãy ghi cụ thể loại tác vụ muốn thực hiện.
+- ✨ **NEW**: Project now supports modern Python imports from `src/` directory with full backward compatibility.

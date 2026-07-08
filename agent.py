@@ -8,12 +8,11 @@ from langgraph.graph.message import add_messages
 from typing_extensions import Annotated, TypedDict
 
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
-
+from langchain.agents import create_agent
 from tools.normal.tools import search_products
 
 
-LOCAL_MODEL = getenv("LOCAL_MODEL", "qwen2.5:7b-instruct")
+LOCAL_MODEL = getenv("LOCAL_MODEL", "llama3.1:8b")
 
 
 def _build_llm() -> ChatOpenAI:
@@ -42,6 +41,9 @@ Quy tắc chọn hành động:
 
 Khi gọi search_products:
 - Điền các structured field bạn nhận ra được (brand, series, model, cpu, ram, capacity, interface, product_type, price_range).
+- **QUAN TRỌNG: Giữ nguyên (preserve) các field từ lượt hội thoại trước:**
+    * Nếu user không mention thay đổi một field (ví dụ: product_type, brand) → GIỮ NGUYÊN giá trị cũ
+    * Chỉ THAY ĐỔI khi user rõ ràng mention (ví dụ: "thay đổi sang loại khác", "tìm hãng khác", "giá khác")
 - Tham số user_query phải chứa đủ ngữ cảnh để tìm kiếm độc lập:
     * Câu hỏi đầy đủ: dùng NGUYÊN VĂN câu user hỏi, không rút gọn.
     * Câu follow-up thiếu ngữ cảnh (ví dụ: "xin link", "giá bao nhiêu", "còn hàng không", "thông số kỹ thuật"):
@@ -68,7 +70,7 @@ Ví dụ đúng:
 """
 
 GENERAL_ASSISTANT_PROMPT = """/no_think
-Bạn là trợ lý chung cho các câu hỏi KHÔNG liên quan tìm sản phẩm trong database.
+Bạn là trợ lý VNPT GIA LAI hỗ trợ chung cho các câu hỏi KHÔNG liên quan tìm sản phẩm trong database.
 
 Nguyên tắc:
 - Trả lời ngắn gọn, rõ ràng bằng tiếng Việt.
@@ -118,10 +120,10 @@ def _route_next(state: OrchestratorState) -> Literal["product_agent", "general_a
     return "product_agent" if state.get("route") == "product" else "general_agent"
 
 
-product_agent = create_react_agent(
+product_agent = create_agent(
     model=_build_llm(),
     tools=[search_products],
-    prompt=ORCHESTRATOR_PROMPT,
+    system_prompt=ORCHESTRATOR_PROMPT,
 )
 
 

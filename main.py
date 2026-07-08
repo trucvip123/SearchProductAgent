@@ -1,5 +1,4 @@
 import asyncio
-import json
 import os
 import re
 from datetime import datetime
@@ -11,14 +10,13 @@ os.environ.setdefault("OPENAI_BASE_URL", "http://localhost:11434/v1")
 os.environ.setdefault("OPENAI_API_KEY", "ollama")
 
 from langchain_core.messages import (
-    AIMessage,
-    AIMessageChunk,
     HumanMessage,
-    ToolMessage,
+    SystemMessage,
 )
 
-from agent import orchestrator_agent, LOCAL_MODEL
-from tools.normal.tools import search_products
+from agent import LOCAL_MODEL
+from agent_handler import run_agent_query
+from product_memory import ProductMemoryManager
 
 
 def _is_verbose_enabled() -> bool:
@@ -28,101 +26,6 @@ def _is_verbose_enabled() -> bool:
 def _log(message: str) -> None:
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{ts}] {message}", flush=True)
-
-
-def _extract_current_product(tool_content: str) -> str | None:
-    """Trích tên sản phẩm đầu tiên từ JSON kết quả tool.
-
-    Trả None nếu không parse được hoặc không có sản phẩm.
-    """
-    try:
-        data = json.loads(tool_content)
-        products = data.get("products") or []
-        if products:
-            return products[0].get("tên") or None
-    except (json.JSONDecodeError, AttributeError):
-        pass
-    return None
-
-
-def _extract_balanced_json(text: str, start_idx: int) -> str | None:
-    """Extract the first balanced JSON object starting at/after start_idx."""
-    open_idx = text.find("{", start_idx)
-    if open_idx == -1:
-        return None
-
-    depth = 0
-    in_string = False
-    escaped = False
-    for idx in range(open_idx, len(text)):
-        ch = text[idx]
-        if escaped:
-            escaped = False
-            continue
-        if ch == "\\":
-            escaped = True
-            continue
-        if ch == '"':
-            in_string = not in_string
-            continue
-        if in_string:
-            continue
-
-        if ch == "{":
-            depth += 1
-        elif ch == "}":
-            depth -= 1
-            if depth == 0:
-                return text[open_idx: idx + 1]
-
-    return None
-
-
-def _extract_pseudo_search_products_args(text: str) -> dict | None:
-    """Detect pseudo tool-call text and extract search_products args JSON."""
-    marker = "to=search_products"
-    marker_idx = text.find(marker)
-    if marker_idx == -1:
-        return None
-
-    raw_json = _extract_balanced_json(text, marker_idx)
-    if not raw_json:
-        return None
-
-    try:
-        payload = json.loads(raw_json)
-    except json.JSONDecodeError:
-        return None
-
-    return payload if isinstance(payload, dict) else None
-
-
-def _format_search_products_result(tool_content: str) -> str:
-    """Render search tool JSON into a concise, user-facing Vietnamese response."""
-    try:
-        data = json.loads(tool_content)
-    except (json.JSONDecodeError, TypeError):
-        return tool_content.strip() if isinstance(tool_content, str) else ""
-
-    status = data.get("status")
-    if status == "error":
-        return data.get("message") or "Đã xảy ra lỗi khi tra cứu dữ liệu sản phẩm."
-
-    if status == "no_products":
-        return data.get("message") or "Không tìm thấy sản phẩm phù hợp trong dữ liệu hiện tại."
-
-    products = data.get("products") or []
-    if not products:
-        return "Không tìm thấy sản phẩm phù hợp trong dữ liệu hiện tại."
-
-    lines = [f"Tìm thấy {len(products)} sản phẩm phù hợp:"]
-    for idx, p in enumerate(products[:10], 1):
-        name = p.get("tên") or "N/A"
-        price = p.get("giá") or "N/A"
-        brand = p.get("hãng") or "Unknown"
-        lines.append(f"{idx}. {name} | Giá: {price} | Hãng: {brand}")
-
-    return "\n".join(lines)
 
 
 def _is_topic_change(input_query: str, current_product: str | None, verbose: bool = False) -> bool:
@@ -222,6 +125,8 @@ async def main():
 
     messages: list = []
     current_product: str | None = None  # sản phẩm/thực thể đang được hỏi
+    product_memory_manager = ProductMemoryManager(verbose=verbose_logs)  # ← NEW: Track ProductMemory
+    
     while True:
         input_query = input("Enter the query: ")
         _log(f"Received user query: {input_query}")
@@ -233,6 +138,7 @@ async def main():
         if _is_topic_change(input_query, current_product, verbose=verbose_logs):
             _log(f"[TOPIC_DETECTION] ✓ Topic change detected → resetting context (was: '{current_product}')")
             current_product = None
+            product_memory_manager.previous_memory = None  # ← NEW: Reset ProductMemory on topic change
         else:
             _log(f"[TOPIC_DETECTION] ✓ Same topic (continuing with current context)")
         
@@ -245,92 +151,44 @@ async def main():
             _log(f"[QUERY_BUILD] ✓ Query unchanged: '{effective_query}'")
 
         messages.append(HumanMessage(content=input_query))
+        
+        # ← NEW: Add system context about previous ProductMemory to help LLM preserve fields
+        context_msg = product_memory_manager.get_context_message()
+        if context_msg:
+            messages.insert(-1, context_msg)  # Insert before the latest HumanMessage
+            _log(f"[PRODUCT_MEMORY] Added context message about previous memory")
+        
+        # ← NEW: If query was enriched, add a helper message to make LLM aware of the context
+        # This ensures the LLM uses enriched query when calling search_products
+        if effective_query != input_query:
+            enrichment_note = (
+                f"[Ngữ cảnh: {effective_query}]\n\n"
+                f"Dựa trên ngữ cảnh trên, hãy tìm kiếm sản phẩm."
+            )
+            context_msg_enriched = SystemMessage(content=enrichment_note)
+            messages.insert(-1, context_msg_enriched)
+            _log(f"[ENRICHMENT] Added query enrichment context")
+        
         _log(f"[STATE] Messages: {len(messages)} items, current_product: {current_product or 'None'}")
 
-        _log("[RUN] Starting agent stream...")
-        streamed_chunks: list[str] = []
-        final_state = None
-        tool_calls_made: list[str] = []
-        tool_results_received: dict[str, int] = {}  # tool_name → product_count
-
-        async for mode, data in orchestrator_agent.astream(
-            {"messages": messages},
-            stream_mode=["values", "messages"],
-        ):
-            if mode == "messages":
-                chunk, _meta = data
-                # Stream token của câu trả lời cuối (AIMessageChunk có content).
-                if isinstance(chunk, AIMessageChunk):
-                    if chunk.content:
-                        streamed_chunks.append(chunk.content)
-                        print(chunk.content, end="", flush=True)
-                    if verbose_logs:
-                        for tc in getattr(chunk, "tool_call_chunks", None) or []:
-                            if tc.get("name"):
-                                tool_name = tc['name']
-                                tool_calls_made.append(tool_name)
-                                _log(f"[STREAM] TOOL_CALL: name={tool_name}")
-                elif isinstance(chunk, ToolMessage):
-                    # Cập nhật current_product từ kết quả tool — luôn chạy bất kể verbose.
-                    if chunk.name == "search_products":
-                        try:
-                            result_data = json.loads(chunk.content or "{}")
-                            product_count = len(result_data.get("products", []))
-                            tool_results_received[chunk.name] = product_count
-                            _log(f"[STREAM] TOOL_RESULT: {chunk.name} returned {product_count} products")
-                            
-                            extracted = _extract_current_product(chunk.content or "")
-                            if extracted:
-                                old_product = current_product
-                                current_product = extracted
-                                _log(f"[STATE] current_product updated: '{old_product}' → '{current_product}'")
-                        except json.JSONDecodeError:
-                            _log(f"[STREAM] TOOL_RESULT: {chunk.name} (parse error)")
-                    else:
-                        if verbose_logs:
-                            output = repr(chunk.content)[:200]
-                            _log(f"[STREAM] TOOL_RESULT: name={chunk.name} output={output}")
-            elif mode == "values":
-                final_state = data
-
-        # Cập nhật lịch sử hội thoại từ state cuối cùng của graph.
-        if final_state and final_state.get("messages"):
-            messages = final_state["messages"]
-            _log(f"[STATE] Updated conversation messages: {len(messages)} items")
-
-        final_response = ""
-        if final_state and final_state.get("messages"):
-            last = final_state["messages"][-1]
-            if isinstance(last, AIMessage) and isinstance(last.content, str):
-                final_response = last.content.strip()
-        if not final_response:
-            final_response = "".join(streamed_chunks).strip()
-
-        # Fallback: model in pseudo tool-call text instead of making a real tool call.
-        if not tool_calls_made and not tool_results_received:
-            pseudo_args = _extract_pseudo_search_products_args(final_response)
-            if pseudo_args is not None:
-                _log(f"[FALLBACK] Detected pseudo tool-call. Executing search_products with args={pseudo_args}")
-                try:
-                    tool_content = await search_products.ainvoke(pseudo_args)
-                    try:
-                        parsed = json.loads(tool_content or "{}")
-                        tool_results_received["search_products"] = len(parsed.get("products") or [])
-                    except (json.JSONDecodeError, AttributeError):
-                        tool_results_received["search_products"] = 0
-
-                    extracted = _extract_current_product(tool_content or "")
-                    if extracted:
-                        old_product = current_product
-                        current_product = extracted
-                        _log(f"[STATE] current_product updated by fallback: '{old_product}' → '{current_product}'")
-
-                    final_response = _format_search_products_result(tool_content or "")
-                except Exception as exc:
-                    _log(f"[FALLBACK] Failed to execute pseudo tool-call: {exc}")
-
-        _log(f"[RUN_SUMMARY] Tool calls: {tool_calls_made}, Results: {tool_results_received}")
-        _log(f"[RUN_SUMMARY] Streamed {len(streamed_chunks)} chunks, Final product: {current_product or 'None'}")
+        # Use shared agent handler for query execution
+        agent_result = await run_agent_query(
+            query=input_query,
+            messages=messages[:-1],  # Exclude the HumanMessage we just added (it's added inside run_agent_query)
+            current_product=current_product,
+            product_memory_manager=product_memory_manager,
+            verbose_logs=verbose_logs,
+            log_func=_log,
+        )
+        
+        # Update state from result
+        final_response = agent_result.response
+        current_product = agent_result.current_product or current_product
+        messages = agent_result.final_messages
+        
+        _log(f"[RUN_SUMMARY] Tool calls: {agent_result.tool_calls_made}, Results: {agent_result.tool_results_received}")
+        _log(f"[RUN_SUMMARY] Final product: {current_product or 'None'}")
+        
         _log("─" * 80)
 
         if final_response:
