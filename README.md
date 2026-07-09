@@ -48,6 +48,7 @@ Các biến này đã có mẫu trong `.env.example`:
 - `POSTGRES_DB`
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
+- `POSTGRES_SSLMODE` (mặc định nên là `require` khi dùng cloud PostgreSQL)
 - `POSTGRES_TABLE`
 
 Ví dụ:
@@ -62,6 +63,7 @@ POSTGRES_PORT=5432
 POSTGRES_DB=server_products
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=your_password_here
+POSTGRES_SSLMODE=require
 POSTGRES_TABLE=products
 ```
 

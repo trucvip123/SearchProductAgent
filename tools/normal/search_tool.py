@@ -274,6 +274,7 @@ async def search_products(
     db_name = getenv("POSTGRES_DB", "server_products")
     db_user = getenv("POSTGRES_USER", "postgres")
     db_password = getenv("POSTGRES_PASSWORD", "")
+    db_ssl_mode = getenv("POSTGRES_SSLMODE", "require").strip().lower()
     db_table = getenv("POSTGRES_TABLE", "products")
 
     if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", db_table):
@@ -283,7 +284,10 @@ async def search_products(
     safe_pw = "***" if db_password else "(empty)"
     _log(
         "CONFIG",
-        f"Connecting PostgreSQL host={db_host} port={db_port} db={db_name} user={db_user} table={db_table} password={safe_pw}",
+        (
+            f"Connecting PostgreSQL host={db_host} port={db_port} db={db_name} "
+            f"user={db_user} table={db_table} password={safe_pw} sslmode={db_ssl_mode}"
+        ),
     )
 
     candidate_hosts = _candidate_db_hosts(db_host)
@@ -323,6 +327,7 @@ async def search_products(
             password=db_password,
             min_size=pool_min_size,
             max_size=pool_max_size,
+            ssl_mode=db_ssl_mode,
         )
         _log("CONNECT", "Acquiring PostgreSQL connection from pool")
 

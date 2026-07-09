@@ -8,15 +8,22 @@ from .logging_utils import _log
 
 
 _pool: Optional[asyncpg.Pool] = None
-_pool_key: Optional[Tuple[str, int, str, str, str]] = None
+_pool_key: Optional[Tuple[str, int, str, str, str, str]] = None
 _pool_loop: Optional[asyncio.AbstractEventLoop] = None  # event loop that owns the pool
 # Use threading.Lock so it works safely across different asyncio event loops
 # (e.g., when each Streamlit request runs in its own daemon thread / asyncio.run()).
 _pool_lock = threading.Lock()
 
 
-def _build_pool_key(host: str, port: int, database: str, user: str, password: str) -> Tuple[str, int, str, str, str]:
-    return (host, port, database, user, password)
+def _build_pool_key(
+    host: str,
+    port: int,
+    database: str,
+    user: str,
+    password: str,
+    ssl_mode: str,
+) -> Tuple[str, int, str, str, str, str]:
+    return (host, port, database, user, password, ssl_mode)
 
 
 def _pool_is_usable() -> bool:
@@ -37,6 +44,7 @@ async def get_db_pool(
     min_size: int = 2,
     max_size: int = 20,
     command_timeout: int = 30,
+    ssl_mode: str = "require",
 ) -> asyncpg.Pool:
     """Return a reusable asyncpg pool.
 
@@ -47,7 +55,8 @@ async def get_db_pool(
     """
     global _pool, _pool_key, _pool_loop
 
-    key = _build_pool_key(host, port, database, user, password)
+    normalized_ssl_mode = (ssl_mode or "require").strip().lower()
+    key = _build_pool_key(host, port, database, user, password, normalized_ssl_mode)
     current_loop = asyncio.get_running_loop()
 
     # Fast path: pool exists, same config, same (open) event loop
@@ -85,6 +94,7 @@ async def get_db_pool(
             database=database,
             user=user,
             password=password,
+            ssl=normalized_ssl_mode,
             min_size=min_size,
             max_size=max_size,
             command_timeout=command_timeout,
@@ -101,7 +111,13 @@ async def get_db_pool(
             _pool = new_pool
             _pool_key = key
             _pool_loop = current_loop
-            _log("POOL", f"Created asyncpg pool min={min_size} max={max_size} command_timeout={command_timeout}s")
+            _log(
+                "POOL",
+                (
+                    f"Created asyncpg pool min={min_size} max={max_size} "
+                    f"command_timeout={command_timeout}s ssl_mode={normalized_ssl_mode}"
+                ),
+            )
         else:
             duplicate_pool = new_pool
 

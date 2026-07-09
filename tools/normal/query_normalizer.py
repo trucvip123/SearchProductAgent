@@ -1,5 +1,4 @@
 from os import getenv
-import re
 from typing import Dict
 
 import httpx
@@ -22,30 +21,6 @@ def _clean_llm_query_text(text: str) -> str:
     return cleaned
 
 
-def _contains_card_monitor_phrase(text: str) -> bool:
-    value = (text or "").lower()
-    return bool(
-        re.search(r"\bcard\s+màn\s+hình\b", value)
-        or re.search(r"\bcard\s+man\s+hinh\b", value)
-    )
-
-
-def _preserve_domain_terms(raw_query: str, normalized_query: str) -> str:
-    normalized = (normalized_query or "").strip()
-    if not normalized:
-        return normalized
-
-    if _contains_card_monitor_phrase(raw_query):
-        # Keep the user's domain term; avoid LLM translating it to 'thẻ màn hình'.
-        normalized = re.sub(r"\bthẻ\s+màn\s+hình\b", "card màn hình", normalized, flags=re.IGNORECASE)
-        normalized = re.sub(r"\bthe\s+man\s+hinh\b", "card màn hình", normalized, flags=re.IGNORECASE)
-
-        if re.search(r"\bcard\s+màn\s+hình\b", raw_query, flags=re.IGNORECASE):
-            normalized = re.sub(r"\bcard\s+màn\s+hình\b", "Card màn hình", normalized, flags=re.IGNORECASE)
-
-    return normalized
-
-
 async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
     """Optional LLM-based query normalization with safe fallback.
 
@@ -66,12 +41,37 @@ async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
     model = getenv("LOCAL_MODEL", "llama3.1:8b")
     timeout_sec = float(getenv("QUERY_NORMALIZER_TIMEOUT_SEC", "4.0"))
 
-    system_prompt = (
-        "Bạn là bộ chuẩn hóa truy vấn tìm kiếm sản phẩm. "
-        "Nhiệm vụ: sửa lỗi chính tả, chuẩn hóa dấu tiếng Việt, loại bỏ nhiễu, "
-        "chuẩn hóa cách diễn đạt giá tiền nhưng giữ nguyên ý định người dùng. "
-        "Chỉ trả về DUY NHẤT 1 câu truy vấn đã chuẩn hóa, không giải thích."
-    )
+    system_prompt = """
+        Bạn là bộ chuẩn hóa truy vấn tìm kiếm sản phẩm.
+
+        Mục tiêu:
+        - Chỉ chuẩn hóa truy vấn, KHÔNG thay đổi ý định tìm kiếm.
+
+        Quy tắc:
+        1. Sửa lỗi chính tả.
+        2. Chuẩn hóa dấu tiếng Việt.
+        3. Loại bỏ ký tự thừa, khoảng trắng thừa.
+        4. Chuẩn hóa cách viết giá tiền.
+        Ví dụ:
+        - 1tr -> 1 triệu
+        - 2 củ -> 2 triệu
+        - 10k -> 10 nghìn
+        5. Giữ nguyên tất cả tên sản phẩm, thương hiệu, model, mã sản phẩm.
+        6. Không dịch hoặc thay thế thuật ngữ.
+        Ví dụ:
+        - card màn hình -> card màn hình
+        - main -> main
+        - VGA -> VGA
+        - CPU -> CPU
+        7. Không thêm thông tin mà người dùng không đề cập.
+        8. Nếu câu đã đúng thì trả lại nguyên văn.
+        9. Với các câu follow-up ngắn (ví dụ: "còn sản phẩm nào khác ko", "loại nào tốt hơn", "giá sao"), chỉ sửa lỗi chính tả nếu có, tuyệt đối không diễn đạt lại.
+
+        Đầu ra:
+        - Chỉ trả về đúng 1 câu truy vấn đã chuẩn hóa.
+        - Không giải thích.
+        - Không thêm dấu ngoặc, markdown hoặc ký tự khác.
+    """
 
     user_prompt = (
         "Query gốc: "
@@ -86,7 +86,7 @@ async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
                 headers={"Authorization": f"Bearer {api_key}"},
                 json={
                     "model": model,
-                    "temperature": 0,
+                    "temperature": 0.2,
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt},
@@ -95,8 +95,8 @@ async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
             )
             resp.raise_for_status()
             content = resp.json()["choices"][0]["message"]["content"]
+            _log("NORMALIZE", f"llm_raw='{content}'")
             normalized = _clean_llm_query_text(content)
-            normalized = _preserve_domain_terms(raw_query, normalized)
             if normalized:
                 _QUERY_NORMALIZATION_CACHE[cache_key] = normalized
                 _log("NORMALIZE", f"llm_normalized='{normalized}'")

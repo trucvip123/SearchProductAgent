@@ -15,6 +15,7 @@ from langchain_core.messages import (
 )
 
 from agent import orchestrator_agent
+from tools.normal.search_tool import search_products as search_products_tool
 from product_memory import ProductMemoryManager
 from .logging_utils import print_log
 from .query_utils import extract_current_product, is_topic_change, build_effective_query
@@ -71,6 +72,85 @@ def _build_grounded_price_response(products: list[dict]) -> str:
     name = str(candidate.get("tên") or "Sản phẩm").strip()
     price = str(candidate.get("giá") or "Chưa có thông tin giá").strip()
     return f"{name} có giá {price}."
+
+
+def _extract_balanced_json(text: str, start_idx: int = 0) -> Optional[str]:
+    open_idx = (text or "").find("{", max(0, start_idx))
+    if open_idx == -1:
+        return None
+
+    depth = 0
+    in_string = False
+    escaped = False
+    for idx in range(open_idx, len(text)):
+        ch = text[idx]
+        if escaped:
+            escaped = False
+            continue
+        if ch == "\\":
+            escaped = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[open_idx: idx + 1]
+    return None
+
+
+def _extract_pseudo_search_products_args(response_text: str) -> Optional[dict]:
+    text = (response_text or "").strip()
+    if not text:
+        return None
+
+    # Case 1: plain JSON payload in the answer.
+    candidate = _extract_balanced_json(text, 0)
+    if candidate:
+        try:
+            payload = json.loads(candidate)
+            if isinstance(payload, dict) and payload.get("name") == "search_products":
+                params = payload.get("parameters", payload.get("args", {}))
+                if isinstance(params, dict):
+                    return params
+        except json.JSONDecodeError:
+            pass
+
+    # Case 2: pseudo marker style: 'to=search_products {...}'.
+    marker = "to=search_products"
+    marker_idx = text.find(marker)
+    if marker_idx != -1:
+        candidate = _extract_balanced_json(text, marker_idx)
+        if candidate:
+            try:
+                payload = json.loads(candidate)
+                if isinstance(payload, dict):
+                    return payload
+            except json.JSONDecodeError:
+                pass
+
+    return None
+
+
+def _build_list_response(products: list[dict], max_items: int = 5) -> str:
+    if not products:
+        return "Không tìm thấy sản phẩm phù hợp trong dữ liệu hiện tại."
+
+    lines = ["Mình tìm thấy các sản phẩm sau:"]
+    for product in products[:max_items]:
+        name = str(product.get("tên") or "Sản phẩm").strip()
+        price = str(product.get("giá") or "").strip()
+        if _has_specific_price(price):
+            lines.append(f"- {name}: {price}")
+        else:
+            lines.append(f"- {name}")
+    return "\n".join(lines)
 
 
 async def run_agent_query(
@@ -250,9 +330,42 @@ async def run_agent_query(
     _log_msg(f"✓ Agent streaming complete ({chunk_count} chunks)")
     _log_msg(f"✓ Agent response ready ({len(response)} chars)")
     if response:
-        _log_msg(f"  Response preview: {response[:150]}")
+        _log_msg(f"  Response preview: {response}")
     else:
         _log_msg(f"  ⚠️ Response is EMPTY!")
+
+    # Fallback: sometimes model emits pseudo tool-call JSON instead of actually calling the tool.
+    if not tool_calls_made and not tool_results_received:
+        pseudo_args = _extract_pseudo_search_products_args(response)
+        if pseudo_args is not None:
+            _log_msg("⚠ Detected pseudo search_products payload -> running fallback tool execution")
+            try:
+                tool_output = await search_products_tool.ainvoke(pseudo_args)
+                result_data = json.loads(tool_output or "{}")
+                latest_products = result_data.get("products", []) or []
+                tool_calls_made.append("search_products(fallback)")
+                tool_results_received["search_products"] = len(latest_products)
+
+                extracted = extract_current_product(tool_output or "")
+                if extracted:
+                    new_current_product = extracted
+                    _log_msg(f"✓ Product detected from fallback: {extracted[:60]}...")
+
+                product_memory_manager.update_with_previous(tool_output or "")
+
+                if _is_price_query(query):
+                    response = _build_grounded_price_response(latest_products)
+                else:
+                    response = _build_list_response(latest_products)
+
+                _log_msg(f"✓ Fallback tool executed: search_products -> {len(latest_products)} products")
+                if on_stream_chunk:
+                    try:
+                        on_stream_chunk(response)
+                    except Exception as callback_error:
+                        _log_msg(f"⚠ Stream callback error: {callback_error}")
+            except Exception as fallback_error:
+                _log_msg(f"⚠ Pseudo-tool fallback failed: {fallback_error}")
 
     # Ground final text to tool result for price questions, avoiding unrelated hallucinated products.
     if latest_products and _is_price_query(query) and not _response_mentions_any_product(response, latest_products):
