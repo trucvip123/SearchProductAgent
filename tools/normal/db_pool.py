@@ -1,6 +1,6 @@
 import asyncio
 import threading
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import asyncpg
 
@@ -8,7 +8,7 @@ from .logging_utils import _log
 
 
 _pool: Optional[asyncpg.Pool] = None
-_pool_key: Optional[Tuple[str, int, str, str, str, str]] = None
+_pool_key: Optional[Tuple[str, int, str, str, str, str, str]] = None
 _pool_loop: Optional[asyncio.AbstractEventLoop] = None  # event loop that owns the pool
 # Use threading.Lock so it works safely across different asyncio event loops
 # (e.g., when each Streamlit request runs in its own daemon thread / asyncio.run()).
@@ -22,8 +22,9 @@ def _build_pool_key(
     user: str,
     password: str,
     ssl_mode: str,
-) -> Tuple[str, int, str, str, str, str]:
-    return (host, port, database, user, password, ssl_mode)
+    connection_options: str,
+) -> Tuple[str, int, str, str, str, str, str]:
+    return (host, port, database, user, password, ssl_mode, connection_options)
 
 
 def _pool_is_usable() -> bool:
@@ -45,6 +46,7 @@ async def get_db_pool(
     max_size: int = 20,
     command_timeout: int = 30,
     ssl_mode: str = "require",
+    connection_options: str = "",
 ) -> asyncpg.Pool:
     """Return a reusable asyncpg pool.
 
@@ -56,7 +58,16 @@ async def get_db_pool(
     global _pool, _pool_key, _pool_loop
 
     normalized_ssl_mode = (ssl_mode or "require").strip().lower()
-    key = _build_pool_key(host, port, database, user, password, normalized_ssl_mode)
+    normalized_connection_options = (connection_options or "").strip()
+    key = _build_pool_key(
+        host,
+        port,
+        database,
+        user,
+        password,
+        normalized_ssl_mode,
+        normalized_connection_options,
+    )
     current_loop = asyncio.get_running_loop()
 
     # Fast path: pool exists, same config, same (open) event loop
@@ -88,17 +99,24 @@ async def get_db_pool(
 
     # Create the new pool (await outside threading lock)
     try:
+        connect_kwargs: Dict[str, object] = {
+            "host": host,
+            "port": port,
+            "database": database,
+            "user": user,
+            "password": password,
+            "ssl": normalized_ssl_mode,
+            "min_size": min_size,
+            "max_size": max_size,
+            "command_timeout": command_timeout,
+            "connection_class": asyncpg.connection.Connection,
+        }
+        if normalized_connection_options:
+            # Neon SNI fallback for environments with older libpq/client behavior.
+            connect_kwargs["server_settings"] = {"options": normalized_connection_options}
+
         new_pool = await asyncpg.create_pool(
-            host=host,
-            port=port,
-            database=database,
-            user=user,
-            password=password,
-            ssl=normalized_ssl_mode,
-            min_size=min_size,
-            max_size=max_size,
-            command_timeout=command_timeout,
-            connection_class=asyncpg.connection.Connection,
+            **connect_kwargs,
         )
     except Exception as e:
         _log("POOL", f"Failed to create pool: {e}")
@@ -115,7 +133,8 @@ async def get_db_pool(
                 "POOL",
                 (
                     f"Created asyncpg pool min={min_size} max={max_size} "
-                    f"command_timeout={command_timeout}s ssl_mode={normalized_ssl_mode}"
+                    f"command_timeout={command_timeout}s ssl_mode={normalized_ssl_mode} "
+                    f"connection_options='{normalized_connection_options or '(none)'}'"
                 ),
             )
         else:

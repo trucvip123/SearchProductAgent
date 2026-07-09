@@ -49,6 +49,7 @@ Các biến này đã có mẫu trong `.env.example`:
 - `POSTGRES_USER`
 - `POSTGRES_PASSWORD`
 - `POSTGRES_SSLMODE` (mặc định nên là `require` khi dùng cloud PostgreSQL)
+- `POSTGRES_ENDPOINT_ID` (tuỳ chọn cho Neon SNI; để trống sẽ tự suy ra từ hostname)
 - `POSTGRES_TABLE`
 
 Ví dụ:
@@ -64,6 +65,7 @@ POSTGRES_DB=server_products
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=your_password_here
 POSTGRES_SSLMODE=require
+POSTGRES_ENDPOINT_ID=
 POSTGRES_TABLE=products
 ```
 

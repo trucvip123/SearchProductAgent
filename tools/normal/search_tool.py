@@ -68,6 +68,21 @@ def _candidate_db_hosts(host: str) -> List[str]:
     return candidates
 
 
+def _derive_neon_endpoint_id(host: str) -> str:
+    """Derive Neon endpoint id from hostname first label as-is.
+
+    Neon may expect the project option to match the SNI-inferred project name exactly,
+    including the '-pooler' suffix when using pooler hostnames.
+    """
+    base = _normalize_db_host(host)
+    if not base:
+        return ""
+    first_label = base.split(".", 1)[0].strip()
+    if not first_label:
+        return ""
+    return first_label
+
+
 _SPEC_QUERY_PATTERNS = [
     re.compile(
         r"\b(?:vga|gpu|card\s*man\s*hinh|card\s*màn\s*hình|cpu|ram|ssd|hdd|storage|interface)\s*[:=\-]\s*([^,;\n]+)",
@@ -275,6 +290,7 @@ async def search_products(
     db_user = getenv("POSTGRES_USER", "postgres")
     db_password = getenv("POSTGRES_PASSWORD", "")
     db_ssl_mode = getenv("POSTGRES_SSLMODE", "require").strip().lower()
+    db_endpoint_id = getenv("POSTGRES_ENDPOINT_ID", "").strip()
     db_table = getenv("POSTGRES_TABLE", "products")
 
     if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", db_table):
@@ -316,6 +332,12 @@ async def search_products(
         _log("DNS", f"Using fallback host '{selected_host}' instead of '{db_host}'")
         db_host = selected_host
 
+    derived_neon_endpoint_id = _derive_neon_endpoint_id(db_host) if "neon.tech" in db_host else ""
+    effective_endpoint_id = db_endpoint_id or derived_neon_endpoint_id
+    connection_options = f"endpoint={effective_endpoint_id}" if effective_endpoint_id else ""
+    if connection_options:
+        _log("CONFIG", f"Using PostgreSQL connection options '{connection_options}'")
+
     try:
         pool_min_size = int(getenv("POSTGRES_POOL_MIN_SIZE", "1"))
         pool_max_size = int(getenv("POSTGRES_POOL_MAX_SIZE", "10"))
@@ -328,6 +350,7 @@ async def search_products(
             min_size=pool_min_size,
             max_size=pool_max_size,
             ssl_mode=db_ssl_mode,
+            connection_options=connection_options,
         )
         _log("CONNECT", "Acquiring PostgreSQL connection from pool")
 
@@ -528,7 +551,7 @@ async def search_products(
                     brand_value = "Unknown"
                     price = "N/A"
                     config = "N/A"
-                    _log("HYBRID", f"Parsing n8n row id={row_id} score={score} text_len={len(text_value)}")
+                    # _log("HYBRID", f"Parsing n8n row id={row_id} score={score} text_len={len(text_value)}")
 
                     m_name = re.search(r"Tên sản phẩm:\s*(.+?)(?:\.|Giá)", text_value)
                     if m_name:
