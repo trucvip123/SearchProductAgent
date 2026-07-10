@@ -1,10 +1,15 @@
-"""Prompts module - System and agent prompts.
+"""Prompts module - System and agent prompts."""
 
-This module will contain all system prompts used by the agents.
-Currently, prompts are defined inline in src/agent/__init__.py
-"""
+from .agent_prompts import ORCHESTRATOR_PROMPT, GENERAL_ASSISTANT_PROMPT
+from .normalizer_prompts import (
+    QUERY_NORMALIZER_SYSTEM_PROMPT,
+    build_query_normalizer_user_prompt,
+)
 
-# TODO: Extract prompts from agent module and organize them here
-# - ORCHESTRATOR_PROMPT
-# - GENERAL_ASSISTANT_PROMPT
-# - Create specialized prompt classes or template system
+__all__ = [
+    "ORCHESTRATOR_PROMPT",
+    "GENERAL_ASSISTANT_PROMPT",
+    "QUERY_NORMALIZER_SYSTEM_PROMPT",
+    "build_query_normalizer_user_prompt",
+]
+

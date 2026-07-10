@@ -1,4 +1,4 @@
-"""Data models for ProductMemory and SearchIntent."""
+"""Data models, LLM factory, embedding, and model provider configuration."""
 
 from dataclasses import dataclass, fields, asdict
 from typing import Optional, List, Dict, Any
@@ -46,3 +46,41 @@ class SearchIntent:
 
     def to_log_dict(self) -> Dict[str, Any]:
         return {k: v for k, v in asdict(self).items() if v is not None}
+
+
+# LLM / embedding / provider config
+from .config import (
+    get_llm_base_url,
+    get_llm_api_key,
+    get_local_model,
+    get_embedding_model,
+    get_query_normalizer_timeout,
+    is_llm_query_normalization_enabled,
+    LOCAL_MODEL,
+    EMBEDDING_MODEL,
+    LLM_BASE_URL,
+    LLM_API_KEY,
+)
+from .llm import _build_llm
+from .embedding import _get_query_embedding
+
+__all__ = [
+    # data models
+    "ProductMemory",
+    "SearchIntent",
+    # config
+    "get_llm_base_url",
+    "get_llm_api_key",
+    "get_local_model",
+    "get_embedding_model",
+    "get_query_normalizer_timeout",
+    "is_llm_query_normalization_enabled",
+    "LOCAL_MODEL",
+    "EMBEDDING_MODEL",
+    "LLM_BASE_URL",
+    "LLM_API_KEY",
+    # LLM factory
+    "_build_llm",
+    # embedding
+    "_get_query_embedding",
+]

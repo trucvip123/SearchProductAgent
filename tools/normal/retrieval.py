@@ -1,31 +1,10 @@
+"""Backward-compatible shim — _get_query_embedding moved to src.models.embedding.
+
+_rrf_merge stays here as a pure algorithm utility.
+"""
+
+from src.models.embedding import _get_query_embedding  # noqa: F401
 from typing import Optional, List, Dict, Any
-from os import getenv
-
-import httpx
-
-from .logging_utils import _log
-
-
-async def _get_query_embedding(query: str) -> Optional[List[float]]:
-    """Call Ollama embeddings API and return a query vector."""
-    embed_model = getenv("EMBEDDING_MODEL", "nomic-embed-text")
-    base_url = getenv("OPENAI_BASE_URL", "http://localhost:11434/v1").rstrip("/")
-    api_key = getenv("OPENAI_API_KEY", "ollama")
-    _log("EMBED", f"model={embed_model}, query_len={len(query)}")
-    try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            resp = await client.post(
-                f"{base_url}/embeddings",
-                json={"model": embed_model, "input": query},
-                headers={"Authorization": f"Bearer {api_key}"},
-            )
-            resp.raise_for_status()
-            vec = resp.json()["data"][0]["embedding"]
-            _log("EMBED", f"OK, dimensions={len(vec)}")
-            return vec
-    except Exception as exc:
-        _log("EMBED", f"Skipped (non-fatal): {exc}")
-        return None
 
 
 def _rrf_merge(

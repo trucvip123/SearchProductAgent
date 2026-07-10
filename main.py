@@ -14,9 +14,9 @@ from langchain_core.messages import (
     SystemMessage,
 )
 
-from agent import LOCAL_MODEL
-from agent_handler import run_agent_query
-from product_memory import ProductMemoryManager
+from src.agent import LOCAL_MODEL
+from src.agent import run_agent_query
+from src.agent import ProductMemoryManager
 
 
 def _is_verbose_enabled() -> bool:
@@ -129,6 +129,24 @@ def _build_effective_query(input_query: str, current_product: str | None, verbos
             r"kh[aá]c\s*(ko|kh[oô]ng)",
         ]
         return any(re.search(pattern, q or "") for pattern in patterns)
+
+    def _is_general_chat_message(q: str) -> bool:
+        text = re.sub(r"\s+", " ", (q or "").strip().lower())
+        if not text:
+            return False
+        patterns = [
+            r"^(hi|hello|hey|alo|yo)\W*$",
+            r"^(ok|oke|okay|v[âa]ng|d[ạa]|uhm+)\W*$",
+            r"^(ch[aà]o|xin\s+ch[aà]o|ch[aà]o\s+bạn)\W*$",
+            r"^(c[aả]m\s*ơn|thanks?|thank\s+you)\W*$",
+            r"^(bye|tạm\s+biệt|tam\s+biet|hẹn\s+gặp\s+lại)\W*$",
+        ]
+        return any(re.search(pattern, text) for pattern in patterns)
+
+    if _is_general_chat_message(input_query):
+        if verbose:
+            _log("  [QUERY_BUILD] General chit-chat detected -> keep query as-is")
+        return input_query
 
     if _is_more_results_followup(input_query.lower()):
         if verbose:

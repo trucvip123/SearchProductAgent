@@ -5,6 +5,23 @@ import re
 from typing import Optional
 
 
+_GENERAL_CHAT_PATTERNS = [
+    r"^(hi|hello|hey|alo|yo)\W*$",
+    r"^(ok|oke|okay|v[âa]ng|d[ạa]|uhm+)\W*$",
+    r"^(ch[aà]o|xin\s+ch[aà]o|ch[aà]o\s+bạn)\W*$",
+    r"^(c[aả]m\s*ơn|thanks?|thank\s+you)\W*$",
+    r"^(bye|tạm\s+biệt|tam\s+biet|hẹn\s+gặp\s+lại)\W*$",
+]
+
+
+def _is_general_chat_message(query: str) -> bool:
+    """Return True for greeting/chit-chat messages that should not trigger product context enrichment."""
+    text = re.sub(r"\s+", " ", (query or "").strip().lower())
+    if not text:
+        return False
+    return any(re.search(pattern, text) for pattern in _GENERAL_CHAT_PATTERNS)
+
+
 def _is_more_results_followup(query_lower: str) -> bool:
     q = (query_lower or "").strip()
     if not q:
@@ -90,6 +107,8 @@ def is_topic_change(input_query: str, current_product: Optional[str]) -> bool:
 
 def build_effective_query(input_query: str, current_product: Optional[str]) -> str:
     """Ghép current_product vào đầu query nếu chưa có."""
+    if _is_general_chat_message(input_query):
+        return input_query
     if _is_more_results_followup(input_query.lower()):
         return input_query
     if not current_product:

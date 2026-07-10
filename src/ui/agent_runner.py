@@ -14,9 +14,10 @@ from langchain_core.messages import (
     SystemMessage,
 )
 
-from agent import orchestrator_agent
-from tools.normal.search_tool import search_products as search_products_tool
-from product_memory import ProductMemoryManager
+from src.agent import orchestrator_agent
+from src.agent import extract_product_memory_from_tool_call
+from src.tools import search_products as search_products_tool
+from src.agent import ProductMemoryManager
 from .logging_utils import print_log
 from .query_utils import extract_current_product, is_topic_change, build_effective_query
 
@@ -40,6 +41,66 @@ def _is_price_query(text: str) -> bool:
         r"bao\s+tien",
     ]
     return any(re.search(p, q) for p in patterns)
+
+
+def _is_link_query(text: str) -> bool:
+    q = (text or "").lower()
+    patterns = [
+        r"\blink\b",
+        r"đường\s*link",
+        r"duong\s*link",
+        r"trang\s*sản\s*phẩm",
+        r"trang\s*san\s*pham",
+        r"url",
+    ]
+    return any(re.search(p, q) for p in patterns)
+
+
+def _normalize_for_match(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
+
+
+def _select_best_product(products: list[dict], query: str) -> dict:
+    if not products:
+        return {}
+
+    query_norm = _normalize_for_match(query)
+    query_tokens = [tok for tok in query_norm.split() if len(tok) >= 3]
+
+    best = products[0]
+    best_score = -1
+    for product in products:
+        name = str(product.get("tên") or "")
+        name_norm = _normalize_for_match(name)
+        score = 0
+
+        if name_norm and name_norm in query_norm:
+            score += 100
+
+        for token in query_tokens:
+            if token in name_norm:
+                score += 2
+            if any(ch.isdigit() for ch in token) and token in name_norm:
+                score += 4
+
+        if score > best_score:
+            best = product
+            best_score = score
+
+    return best
+
+
+def _build_grounded_link_response(products: list[dict], query: str) -> str:
+    if not products:
+        return ""
+
+    candidate = _select_best_product(products, query)
+    name = str(candidate.get("tên") or "Sản phẩm").strip()
+    link = str(candidate.get("link_sản_phẩm") or "").strip().rstrip(".")
+
+    if link and link.lower().startswith(("http://", "https://")):
+        return f"Link sản phẩm của {name} là: {link}"
+    return "Không có thông tin này trong dữ liệu hiện tại."
 
 
 def _has_specific_price(price_text: str) -> bool:
@@ -186,23 +247,45 @@ async def run_agent_query(
     new_current_product = current_product
     latest_products: list[dict] = []
 
+    def _build_context_anchor() -> Optional[str]:
+        if current_product and current_product.strip():
+            return current_product
+
+        prev_memory = getattr(product_memory_manager, "previous_memory", None)
+        if not prev_memory:
+            return None
+
+        parts = [
+            (prev_memory.product_type or "").strip(),
+            (prev_memory.brand or "").strip(),
+            (prev_memory.series or "").strip(),
+            (prev_memory.model or "").strip(),
+        ]
+        anchor = " ".join([part for part in parts if part])
+        return anchor or None
+
     def _log_msg(msg: str):
         ts = datetime.now().strftime("%H:%M:%S")
         log_entry = f"[{ts}] {msg}"
         logs.append(log_entry)
         print_log(msg)  # Print to terminal AND file
 
+    context_anchor = _build_context_anchor()
+    if context_anchor and context_anchor != current_product:
+        _log_msg(f"✓ Context anchor from ProductMemory: '{context_anchor}'")
+
     # Topic detection
-    topic_changed = is_topic_change(query, current_product)
+    topic_changed = is_topic_change(query, context_anchor)
     if topic_changed:
         _log_msg(f"✓ Topic change detected: resetting context")
         new_current_product = None
         product_memory_manager.reset()  # Reset ProductMemory on topic change
+        context_anchor = None
     else:
         _log_msg(f"✓ Same topic: keeping context")
 
     # Build effective query
-    effective_query = build_effective_query(query, current_product)
+    effective_query = build_effective_query(query, context_anchor)
     if effective_query != query:
         _log_msg(f"✓ Query enriched: '{effective_query}'")
     else:
@@ -293,6 +376,16 @@ async def run_agent_query(
                             on_stream_chunk("".join(response_chunks))
                         except Exception as callback_error:
                             _log_msg(f"⚠ Stream callback error: {callback_error}")
+
+                # Preserve structured ProductMemory from tool-call args even if tool later returns no_products.
+                if hasattr(chunk, "tool_calls") and chunk.tool_calls:
+                    for tc in chunk.tool_calls:
+                        extracted_memory = extract_product_memory_from_tool_call(tc)
+                        if extracted_memory:
+                            product_memory_manager.current_memory = extracted_memory
+                            _log_msg(
+                                f"✓ Captured ProductMemory from tool_call args: {extracted_memory.to_log_dict()}"
+                            )
                             
             elif isinstance(chunk, ToolMessage):
                 # Safely access chunk.name with default
@@ -371,6 +464,16 @@ async def run_agent_query(
     if latest_products and _is_price_query(query) and not _response_mentions_any_product(response, latest_products):
         response = _build_grounded_price_response(latest_products)
         _log_msg("✓ Response grounded from latest search_products result")
+        if on_stream_chunk:
+            try:
+                on_stream_chunk(response)
+            except Exception as callback_error:
+                _log_msg(f"⚠ Stream callback error: {callback_error}")
+
+    # Ground final text to tool result for link questions when model drifts to generic advice.
+    if latest_products and _is_link_query(query) and "http" not in (response or "").lower():
+        response = _build_grounded_link_response(latest_products, query)
+        _log_msg("✓ Link response grounded from latest search_products result")
         if on_stream_chunk:
             try:
                 on_stream_chunk(response)

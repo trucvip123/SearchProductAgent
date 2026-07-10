@@ -25,8 +25,8 @@ from src.ui import (
     render_response_metadata,
     render_logs_panel,
 )
-from agent import LOCAL_MODEL
-from product_memory import ProductMemoryManager
+from src.agent import LOCAL_MODEL
+from src.agent import ProductMemoryManager
 
 
 # ─────────────────────────────────────────────────────────────────
