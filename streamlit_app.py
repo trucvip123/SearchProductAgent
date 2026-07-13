@@ -21,7 +21,6 @@ from src.ui import (
     render_header,
     render_current_context,
     render_chat_history,
-    render_agent_response,
     render_response_metadata,
     render_logs_panel,
 )

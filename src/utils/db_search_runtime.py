@@ -11,7 +11,7 @@ from typing import Optional
 
 import asyncpg
 
-from tools.normal.logging_utils import _log
+from src.utils.logging_utils import _log
 
 from .db_utils import _normalize_db_host, _candidate_db_hosts, _derive_neon_endpoint_id
 

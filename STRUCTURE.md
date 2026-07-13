@@ -112,7 +112,6 @@ class ProductMemory:
 - `_log()`: Structured logging with timestamp
 - `_error_json()`: Error response formatting
 - `get_db_pool()`: AsyncPG connection pool management
-- `normalize_query_with_llm()`: LLM-based query normalization
 - `_get_query_embedding()`: Vector embedding generation
 - `_parse_price_intent()`: Price range extraction
 - `_build_search_intent()`: Intent normalization

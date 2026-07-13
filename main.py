@@ -51,6 +51,14 @@ def _is_topic_change(input_query: str, current_product: str | None, verbose: boo
         "synology":   ["synology"],
     }
 
+    product_family_keywords: dict[str, list[str]] = {
+        "gpu": ["card màn hình", "card man hinh", "vga", "gpu", "rtx", "gtx", "radeon"],
+        "server": ["máy chủ", "may chu", "server", "vmware", "esxi", "proliant", "poweredge"],
+        "laptop": ["laptop", "notebook", "thinkpad", "macbook"],
+        "storage": ["nas", "ổ cứng", "o cung", "ssd", "hdd", "synology", "qnap"],
+        "network": ["switch", "router", "firewall", "wifi", "access point"],
+    }
+
     query_lower = input_query.lower()
     product_lower = current_product.lower()
 
@@ -91,6 +99,25 @@ def _is_topic_change(input_query: str, current_product: str | None, verbose: boo
     if current_brand and query_brand and current_brand != query_brand:
         if verbose:
             _log(f"  [TOPIC_DETECT] MATCH → Topic change (brand mismatch: {current_brand} vs {query_brand})")
+        return True
+
+    def _detect_product_family(text: str) -> str | None:
+        normalized = (text or "").lower()
+        if not normalized:
+            return None
+        for family, keywords in product_family_keywords.items():
+            if any(keyword in normalized for keyword in keywords):
+                return family
+        return None
+
+    current_family = _detect_product_family(product_lower)
+    query_family = _detect_product_family(query_lower)
+    if verbose:
+        _log(f"  [TOPIC_DETECT] current_family={current_family}, query_family={query_family}")
+
+    if current_family and query_family and current_family != query_family:
+        if verbose:
+            _log(f"  [TOPIC_DETECT] MATCH → Topic change (family mismatch: {current_family} vs {query_family})")
         return True
 
     # Explicit topic change keywords

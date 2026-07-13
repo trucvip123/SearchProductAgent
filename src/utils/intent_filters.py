@@ -4,7 +4,7 @@ import unicodedata
 from typing import Optional, Any, List, Dict
 
 from .logging_utils import _log
-from .models import ProductMemory, SearchIntent
+from ..models.search_models import ProductMemory, SearchIntent
 
 
 _KNOWN_BRANDS = {
@@ -43,6 +43,15 @@ _PRODUCT_TYPE_MATCH_ALIASES = {
     "workstation": ["workstation"],
     "thiết bị mạng": ["thiết bị mạng", "thiet bi mang", "network device", "switch", "router", "firewall"],
 }
+
+_SERVER_EXCLUDE_KEYWORDS = [
+    "bo mạch chủ",
+    "bo mach chu",
+    "mainboard",
+    "motherboard",
+    "main máy chủ",
+    "main server",
+]
 
 _PRICE_SKIP_KEYWORDS = [
     "liên hệ",
@@ -570,6 +579,11 @@ def _product_matches_text_intent(product: Dict, intent: SearchIntent) -> bool:
     if intent.product_type and not _product_matches_type_intent(intent.product_type, searchable_text):
         _log("INTENT_FILTER", f"reject '{product_name}': product_type mismatch '{intent.product_type}'")
         return False
+
+    if intent.product_type and _normalize_user_query(intent.product_type) == "máy chủ":
+        if any(keyword in searchable_text for keyword in _SERVER_EXCLUDE_KEYWORDS):
+            _log("INTENT_FILTER", f"reject '{product_name}': excluded server component match")
+            return False
 
     for value in [intent.brand, intent.series, intent.model]:
         if value and value.lower() not in searchable_text:

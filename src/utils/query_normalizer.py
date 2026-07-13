@@ -8,8 +8,7 @@ from src.models import (
     get_llm_base_url,
     get_llm_api_key,
     get_local_model,
-    get_query_normalizer_timeout,
-    is_llm_query_normalization_enabled,
+    get_query_normalizer_timeout
 )
 
 
@@ -28,18 +27,13 @@ def _clean_llm_query_text(text: str) -> str:
     return cleaned
 
 
-async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
+async def normalize_query_with_llm(query: str) -> str:
     """Optional LLM-based query normalization with safe fallback.
-
-    Enabled only when ENABLE_LLM_QUERY_NORMALIZATION is truthy.
     """
-    if not raw_query.strip():
-        return fallback_query
+    if not query.strip():
+        return query
 
-    if not is_llm_query_normalization_enabled():
-        return fallback_query
-
-    cache_key = raw_query.strip().lower()
+    cache_key = query.strip().lower()
     if cache_key in _QUERY_NORMALIZATION_CACHE:
         return _QUERY_NORMALIZATION_CACHE[cache_key]
 
@@ -58,7 +52,7 @@ async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
                     "temperature": 0.2,
                     "messages": [
                         {"role": "system", "content": QUERY_NORMALIZER_SYSTEM_PROMPT},
-                        {"role": "user", "content": build_query_normalizer_user_prompt(raw_query)},
+                        {"role": "user", "content": build_query_normalizer_user_prompt(query)},
                     ],
                 },
             )
@@ -73,5 +67,5 @@ async def normalize_query_with_llm(raw_query: str, fallback_query: str) -> str:
     except Exception as exc:
         _log("NORMALIZE", f"LLM normalize skipped/fallback: {exc}")
 
-    _QUERY_NORMALIZATION_CACHE[cache_key] = fallback_query
-    return fallback_query
+    _QUERY_NORMALIZATION_CACHE[cache_key] = query
+    return query

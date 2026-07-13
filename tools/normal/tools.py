@@ -4,8 +4,8 @@ This module keeps existing imports stable while delegating implementation
 across smaller modules for cleaner architecture.
 """
 
-from .error_utils import _error_json, _product_error_message
-from .intent_filters import (
+from ...src.utils.error_utils import _error_json, _product_error_message
+from ...src.utils.intent_filters import (
     _build_metadata_filter_clauses,
     _build_search_intent,
     _deduplicate_products,
@@ -22,9 +22,9 @@ from .intent_filters import (
     _price_token_to_vnd,
     _product_matches_text_intent,
 )
-from .logging_utils import _log
-from .models import ProductMemory, SearchIntent
-from .retrieval import _get_query_embedding, _rrf_merge
+from ...src.utils.logging_utils import _log
+from ...src.models.search_models import ProductMemory, SearchIntent
+from ...src.retrieval.retrieval import _get_query_embedding, _rrf_merge
 from .search_tool import SearchProductsArgs, search_products
 
 __all__ = [

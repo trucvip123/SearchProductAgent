@@ -141,7 +141,6 @@ Exports:
 - _log(): Structured logging
 - _error_json(): Error formatting
 - get_db_pool(): DB connection pool
-- normalize_query_with_llm(): LLM normalization
 - _get_query_embedding(): Vector embedding
 - _parse_price_intent(): Price parsing
 - And 15+ more utilities

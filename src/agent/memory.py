@@ -22,7 +22,7 @@ class ProductMemoryManager:
     """
 
     _MEMORY_FIELDS = [
-        "product_type", "brand", "series", "model", "cpu",
+        "product_type", "brand", "series", "model", "cpu", "gpu",
         "ram", "storage", "capacity", "interface", "price_range", "product_link",
     ]
 

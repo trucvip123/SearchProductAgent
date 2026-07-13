@@ -15,11 +15,12 @@ class SearchProductsArgs(BaseModel):
     series: Optional[str] = Field(default=None, description='Dòng sản phẩm. VD: "My Book", "PowerEdge", "ThinkPad".')
     model: Optional[str] = Field(default=None, description='Model cụ thể. VD: "R740xd", "DS223j", "1381".')
     cpu: Optional[str] = Field(default=None, description='CPU. VD: "Gold 6248", "E-2434".')
+    gpu: Optional[str] = Field(default=None, description='GPU. VD: "NVIDIA RTX 3090", "AMD Radeon RX 6800".')
     ram: Optional[str] = Field(default=None, description='RAM. VD: "128GB", "32GB ECC".')
     storage: Optional[str] = Field(default=None, description='Lưu trữ gắn trong. VD: "2TB SSD".')
     capacity: Optional[str] = Field(default=None, description='Dung lượng ổ cứng ngoài / NAS. VD: "3TB", "8TB".')
     interface: Optional[str] = Field(default=None, description='Giao tiếp. VD: "USB 3.0", "PCIe 4.0".')
-    price_range: Optional[str] = Field(default=None, description='Khoảng giá. VD: "dưới 5 triệu", "10-20 triệu".')
+    price_range: Optional[str] = Field(default=None, description='Khoảng giá. VD: "dưới 10 triệu", "10-20 triệu".')
     product_link: Optional[str] = Field(default=None, description='Link sản phẩm. VD: "https://example.com/product/123".')
 
     @field_validator("user_query", mode="before")
@@ -39,6 +40,7 @@ class SearchProductsArgs(BaseModel):
                     self.series,
                     self.model,
                     self.cpu,
+                    self.gpu,
                     self.ram,
                     self.storage,
                     self.capacity,

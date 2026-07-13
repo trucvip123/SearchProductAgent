@@ -10,6 +10,7 @@ from typing import Any, List, Optional
 import asyncpg
 
 from src.models import ProductMemory
+from src.models import _get_query_embedding
 from src.utils import (
     _log,
     _build_search_intent,
@@ -18,7 +19,6 @@ from src.utils import (
     _expand_query_with_product_type_aliases,
     _filter_products_by_intent,
     _filter_products_with_specific_price,
-    _get_query_embedding,
     _is_price_query,
     _normalize_query_text,
     _rrf_merge,
@@ -26,7 +26,8 @@ from src.utils import (
     _extract_query_spec_terms,
     normalize_query_with_llm,
 )
-from .db_search_runtime import _load_db_config, _resolve_db_connection_settings, _fetch_table_columns
+
+
 
 
 def _no_products_response(query: str) -> str:
@@ -42,23 +43,27 @@ def _no_products_response(query: str) -> str:
 
 
 async def _prepare_search_context(user_query: str, memory: ProductMemory, max_results: int) -> dict:
+    _log("START", f"user_query='{user_query}', max_results={max_results}")
+    _log("MEMORY", f"ProductMemory={memory.to_log_dict()}")
+
     memory_tokens = memory.to_search_tokens()
 
     raw_query = getenv("RUN_USER_QUERY", user_query).strip()
     fallback_query = _normalize_query_text(raw_query)
-    base_query = await normalize_query_with_llm(raw_query=raw_query, fallback_query=fallback_query)
+
+    if raw_query != fallback_query:
+        _log("NORMALIZE", f"fallback_query='{fallback_query}' from raw='{raw_query}'")
+
+    base_query = await normalize_query_with_llm(query=fallback_query)
+
+    if fallback_query != base_query:
+        _log("NORMALIZE", f"final_normalized_query='{base_query}' from fallback='{fallback_query}'")
+
     if memory_tokens:
         extra = [token for token in memory_tokens if token.lower() not in base_query.lower()]
         effective_query = " ".join(extra + [base_query]) if extra else base_query
     else:
         effective_query = base_query
-
-    _log("START", f"user_query='{user_query}', max_results={max_results}")
-    if raw_query != fallback_query:
-        _log("NORMALIZE", f"fallback_query='{fallback_query}' from raw='{raw_query}'")
-    if fallback_query != base_query:
-        _log("NORMALIZE", f"final_normalized_query='{base_query}' from fallback='{fallback_query}'")
-    _log("MEMORY", f"ProductMemory={memory.to_log_dict()}")
 
     intent = _build_search_intent(memory, base_query, effective_query)
     expanded_effective_query = _expand_query_with_product_type_aliases(effective_query, intent.product_type)
@@ -75,6 +80,9 @@ async def _prepare_search_context(user_query: str, memory: ProductMemory, max_re
     fts_text = _expand_query_with_product_type_aliases(fts_seed, intent.product_type)
     _log("HYBRID", f"fts_text='{fts_text}'")
 
+    fts_text_normalized = await normalize_query_with_llm(query=fts_text)
+
+
     kw_pats: List[str] = [f"%{token}%" for token in memory_tokens]
     for token in re.findall(r"\b[A-Za-z]{1,6}-?\d{3,5}[A-Za-z0-9.-]*\b", effective_query, re.IGNORECASE):
         pattern = f"%{token.upper()}%"
@@ -86,6 +94,7 @@ async def _prepare_search_context(user_query: str, memory: ProductMemory, max_re
         "effective_query": effective_query,
         "intent": intent,
         "fts_text": fts_text,
+        "fts_text_normalized": fts_text_normalized,
         "kw_pats": kw_pats[:12],
     }
 def _build_metadata_filters(intent: Any, effective_query: str) -> tuple[str, list]:

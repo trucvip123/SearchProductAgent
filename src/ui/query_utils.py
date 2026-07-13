@@ -14,6 +14,50 @@ _GENERAL_CHAT_PATTERNS = [
 ]
 
 
+_PRODUCT_FAMILY_KEYWORDS = {
+    "gpu": [
+        "card màn hình",
+        "card man hinh",
+        "vga",
+        "gpu",
+        "rtx",
+        "gtx",
+        "radeon",
+    ],
+    "server": [
+        "máy chủ",
+        "may chu",
+        "server",
+        "vmware",
+        "esxi",
+        "proliant",
+        "poweredge",
+    ],
+    "laptop": [
+        "laptop",
+        "notebook",
+        "thinkpad",
+        "macbook",
+    ],
+    "storage": [
+        "nas",
+        "ổ cứng",
+        "o cung",
+        "ssd",
+        "hdd",
+        "synology",
+        "qnap",
+    ],
+    "network": [
+        "switch",
+        "router",
+        "firewall",
+        "wifi",
+        "access point",
+    ],
+}
+
+
 def _is_general_chat_message(query: str) -> bool:
     """Return True for greeting/chit-chat messages that should not trigger product context enrichment."""
     text = re.sub(r"\s+", " ", (query or "").strip().lower())
@@ -45,6 +89,16 @@ def extract_current_product(tool_content: str) -> Optional[str]:
             return products[0].get("tên") or None
     except (json.JSONDecodeError, AttributeError):
         pass
+    return None
+
+
+def _detect_product_family(text: str) -> Optional[str]:
+    normalized = (text or "").lower()
+    if not normalized:
+        return None
+    for family, keywords in _PRODUCT_FAMILY_KEYWORDS.items():
+        if any(keyword in normalized for keyword in keywords):
+            return family
     return None
 
 
@@ -87,6 +141,11 @@ def is_topic_change(input_query: str, current_product: Optional[str]) -> bool:
             break
 
     if current_brand and query_brand and current_brand != query_brand:
+        return True
+
+    current_family = _detect_product_family(product_lower)
+    query_family = _detect_product_family(query_lower)
+    if current_family and query_family and current_family != query_family:
         return True
 
     explicit_change = [

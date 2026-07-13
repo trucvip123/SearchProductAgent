@@ -16,6 +16,7 @@ from langchain_core.messages import (
 
 from src.agent import orchestrator_agent
 from src.agent import extract_product_memory_from_tool_call
+from src.models import ProductMemory, _build_llm
 from src.tools import search_products as search_products_tool
 from src.agent import ProductMemoryManager
 from .logging_utils import print_log
@@ -28,6 +29,100 @@ _PRICE_SKIP_KEYWORDS = [
     "n/a",
     "unknown",
 ]
+
+
+def _has_explicit_budget(text: str) -> bool:
+    q = (text or "").lower()
+    return bool(re.search(r"\b\d[\d.,]*\s*(triệu|trieu|tr|tỷ|ty|vnd|đ|k)\b", q))
+
+
+def _is_product_advisory_query(text: str) -> bool:
+    q = (text or "").lower()
+    product_terms = [
+        "server",
+        "máy chủ",
+        "may chu",
+        "vmware",
+        "esxi",
+        "laptop",
+        "notebook",
+        "máy tính",
+        "may tinh",
+        "workstation",
+        "nas",
+        "card màn hình",
+        "card man hinh",
+        "vga",
+        "gpu",
+    ]
+    advisory_terms = [
+        "phù hợp",
+        "phu hop",
+        "doanh nghiệp nhỏ",
+        "doanh nghiep nho",
+        "sinh viên",
+        "sinh vien",
+        "gợi ý",
+        "goi y",
+        "tư vấn",
+        "tu van",
+        "nên",
+    ]
+    has_product_term = any(term in q for term in product_terms)
+    has_advisory_term = any(term in q for term in advisory_terms)
+    return has_product_term and has_advisory_term
+
+
+def _needs_budget_clarification(text: str) -> bool:
+    return _is_product_advisory_query(text) and not _has_explicit_budget(text)
+
+
+def _detect_budget_product_label(text: str) -> str:
+    q = (text or "").lower()
+    if any(term in q for term in ["laptop", "notebook"]):
+        return "laptop"
+    if any(term in q for term in ["server", "máy chủ", "may chu", "vmware", "esxi"]):
+        return "máy chủ"
+    if any(term in q for term in ["card màn hình", "card man hinh", "vga", "gpu"]):
+        return "card màn hình"
+    if "nas" in q:
+        return "nas"
+    return "sản phẩm"
+
+
+async def _build_budget_clarification_response(query: str) -> str:
+    product_label = _detect_budget_product_label(query)
+    fallback = f"Bạn dự kiến ngân sách khoảng bao nhiêu cho {product_label} để mình gợi ý phù hợp?"
+
+    try:
+        llm = _build_llm()
+        llm_response = await llm.ainvoke(
+            [
+                SystemMessage(
+                    content=(
+                        "Bạn là trợ lý bán hàng CNTT. "
+                        "Nhiệm vụ: viết đúng 1 câu tiếng Việt để hỏi lại ngân sách của người dùng trước khi tư vấn sản phẩm. "
+                        "Câu phải ngắn gọn, lịch sự, có dấu hỏi. Không thêm thông tin ngoài yêu cầu."
+                    )
+                ),
+                HumanMessage(
+                    content=(
+                        f"Người dùng hỏi: {query}\n"
+                        f"Loại sản phẩm chính: {product_label}\n"
+                        "Hãy viết 1 câu hỏi ngân sách phù hợp."
+                    )
+                ),
+            ]
+        )
+        text = (llm_response.content or "").strip() if hasattr(llm_response, "content") else ""
+        if isinstance(text, list):
+            text = " ".join(str(part) for part in text).strip()
+        if isinstance(text, str) and text:
+            return text
+    except Exception:
+        pass
+
+    return fallback
 
 
 def _is_price_query(text: str) -> bool:
@@ -270,6 +365,30 @@ async def run_agent_query(
         logs.append(log_entry)
         print_log(msg)  # Print to terminal AND file
 
+    if _needs_budget_clarification(query):
+        response = await _build_budget_clarification_response(query)
+        product_label = _detect_budget_product_label(query)
+        product_memory_manager.current_memory = ProductMemory(product_type=product_label)
+        product_memory_manager.persist_current()
+        messages.append(HumanMessage(content=query))
+        messages.append(AIMessage(content=response))
+        _log_msg("✓ Budget clarification required for advisory query")
+        _log_msg(f"✓ Preserved product context for next turn: '{product_label}'")
+        if on_stream_chunk:
+            try:
+                on_stream_chunk(response)
+            except Exception as callback_error:
+                _log_msg(f"⚠ Stream callback error: {callback_error}")
+        return {
+            "response": response,
+            "messages": messages,
+            "current_product": current_product,
+            "topic_changed": False,
+            "tool_calls": [],
+            "tool_results": {},
+            "logs": logs,
+        }
+
     context_anchor = _build_context_anchor()
     if context_anchor and context_anchor != current_product:
         _log_msg(f"✓ Context anchor from ProductMemory: '{context_anchor}'")
@@ -329,28 +448,11 @@ async def run_agent_query(
                 chunk = data[0]
             else:
                 chunk = data
-            chunk_type = type(chunk).__name__
-            # _log_msg(f"  [Chunk {chunk_count}] Type: {chunk_type}, ID: {id(chunk)}")
-            
-            # ALWAYS log chunk details regardless of type
-            # if hasattr(chunk, 'content'):
-            #     content_val = chunk.content if hasattr(chunk, 'content') else None
-                # content_len = len(str(content_val)) if content_val else 0
-                # Log full content for errors, truncate for normal content
-                # if content_val and isinstance(content_val, str) and '"status": "error"' in content_val:
-                #     _log_msg(f"       Has 'content' attr: len={content_len}, FULL_ERROR={repr(content_val)}")
-                # else:
-                #     _log_msg(f"       Has 'content' attr: len={content_len}, value={repr(content_val)[:80]}")
-            
-            # if hasattr(chunk, 'tool_call_chunks'):
-            #     _log_msg(f"       Has 'tool_call_chunks' attr: {hasattr(chunk, 'tool_call_chunks')}")
-            
+                
             if isinstance(chunk, AIMessageChunk):
-                # _log_msg(f"  ✅ Confirmed AIMessageChunk instance")
                 if chunk.content:
                     response_chunks.append(chunk.content)
                     saw_text_chunk = True
-                    # _log_msg(f"       Added to response: {chunk.content[:100] if len(chunk.content) > 100 else chunk.content}")
                     if on_stream_chunk:
                         try:
                             on_stream_chunk("".join(response_chunks))

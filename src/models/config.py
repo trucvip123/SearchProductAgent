@@ -31,12 +31,6 @@ def get_query_normalizer_timeout() -> float:
     """Timeout (seconds) for the LLM query-normalizer call."""
     return float(getenv("QUERY_NORMALIZER_TIMEOUT_SEC", "4.0"))
 
-
-def is_llm_query_normalization_enabled() -> bool:
-    """Whether LLM-based query normalization is enabled."""
-    return getenv("ENABLE_LLM_QUERY_NORMALIZATION", "true").strip().lower() in {"1", "true", "yes", "on"}
-
-
 # Module-level convenience constants (resolved once at import time).
 # Use the get_* functions when you need a value that reflects runtime env changes.
 LOCAL_MODEL: str = get_local_model()

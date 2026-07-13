@@ -8,7 +8,7 @@ from typing import Optional, List
 
 import httpx
 
-from tools.normal.logging_utils import _log
+from src.utils.logging_utils import _log
 from .config import get_llm_base_url, get_llm_api_key, get_embedding_model
 
 

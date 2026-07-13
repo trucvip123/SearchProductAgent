@@ -13,6 +13,8 @@ from typing import Optional
 import asyncpg
 from langchain_core.tools import tool
 
+from src.utils.db_search_runtime import _fetch_table_columns, _load_db_config, _resolve_db_connection_settings
+
 from ..utils import (
     get_db_pool,
     _log,
@@ -22,11 +24,8 @@ from ..utils import (
 )
 from ..models import ProductMemory
 from .schemas import SearchProductsArgs
-from ..utils.search_execution import (
+from ..retrieval.search_execution import (
     _prepare_search_context,
-    _load_db_config,
-    _resolve_db_connection_settings,
-    _fetch_table_columns,
     _run_hybrid_search,
     _parse_products_from_rows,
     _finalize_products,
@@ -43,6 +42,7 @@ async def search_products(
     series: Optional[str] = None,
     model: Optional[str] = None,
     cpu: Optional[str] = None,
+    gpu: Optional[str] = None,
     ram: Optional[str] = None,
     storage: Optional[str] = None,
     capacity: Optional[str] = None,
@@ -58,6 +58,7 @@ async def search_products(
         series=series,
         model=model,
         cpu=cpu,
+        gpu=gpu,
         ram=ram,
         storage=storage,
         capacity=capacity,
@@ -65,6 +66,7 @@ async def search_products(
         price_range=price_range,
         product_link=product_link,
     )
+    _log("SEARCH", f"User query: {user_query}, Memory: {memory}, Max results: {max_results}, Vector trace: {vector_trace}")
     context = await _prepare_search_context(user_query, memory, max_results)
     base_query = context["base_query"]
     effective_query = context["effective_query"]

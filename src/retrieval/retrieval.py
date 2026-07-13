@@ -1,10 +1,7 @@
-"""Backward-compatible shim — _get_query_embedding moved to src.models.embedding.
-
-_rrf_merge stays here as a pure algorithm utility.
+"""_rrf_merge stays here as a pure algorithm utility.
 """
 
-from src.models.embedding import _get_query_embedding  # noqa: F401
-from typing import Optional, List, Dict, Any
+from typing import List, Dict, Any
 
 
 def _rrf_merge(

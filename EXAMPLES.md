@@ -40,14 +40,6 @@ from src.tools import search_products, SearchProductsArgs
 # Example 4: Import Utilities
 # ============================================================================
 
-from src.utils import (
-    _log,
-    get_db_pool,
-    _get_query_embedding,
-    _normalize_user_query,
-    _parse_price_intent,
-)
-
 # Log a message
 _log("EXAMPLE", "Starting SearchProductAgent demonstration")
 

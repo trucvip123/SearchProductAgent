@@ -13,6 +13,7 @@ class ProductMemory:
     series: Optional[str] = None
     model: Optional[str] = None
     cpu: Optional[str] = None
+    gpu: Optional[str] = None
     ram: Optional[str] = None
     storage: Optional[str] = None
     capacity: Optional[str] = None
@@ -55,7 +56,6 @@ from .config import (
     get_local_model,
     get_embedding_model,
     get_query_normalizer_timeout,
-    is_llm_query_normalization_enabled,
     LOCAL_MODEL,
     EMBEDDING_MODEL,
     LLM_BASE_URL,
@@ -74,7 +74,6 @@ __all__ = [
     "get_local_model",
     "get_embedding_model",
     "get_query_normalizer_timeout",
-    "is_llm_query_normalization_enabled",
     "LOCAL_MODEL",
     "EMBEDDING_MODEL",
     "LLM_BASE_URL",
